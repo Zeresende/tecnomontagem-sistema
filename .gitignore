@@ -1,0 +1,9 @@
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos de lock do Excel aberto
+~$*.xlsx
+
+# Backups automaticos dos scripts (o git ja versiona; backups sao cinto de seguranca local)
+*_backup_*.xlsx

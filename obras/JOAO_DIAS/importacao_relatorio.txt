@@ -1,0 +1,9 @@
+RELATORIO DE IMPORTACAO - JOAO_DIAS
+Template: C:\Users\resen\Clientes\Tecnomontagem\automatização kits\Levantamento de Informações _ Hederson\16.05.2026\extraido\Projetos\20261799-CYRELA-PROPRIA-VIVAZ PQ JOAO DIAS\JOAO DIAS-QUANTITATIVO PEX-R00 - EMMETI.xlsx
+Data: 2026-06-10
+
+--- ABAS PROCESSADAS ---
+  PASSANTE DE LAJE     (hidden): 0 itens com qtd>0 | codigo: 0 | descricao: 0 | fuzzy: 0 | pendentes: 0
+  KITS                 (visible): 19 itens com qtd>0 | codigo: 19 | descricao: 0 | fuzzy: 0 | pendentes: 0
+
+Total importado: 19 pecas (sistemas: PEX)

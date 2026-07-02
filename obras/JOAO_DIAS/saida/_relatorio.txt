@@ -1,0 +1,20 @@
+RELATORIO DE COTACAO - JOAO_DIAS
+Total de pecas no levantamento: 19
+
+OK  Amanco: 2 itens -> Amanco.xlsx
+[SKIP] Tigre: 0 itens (nao cobre nenhuma peca da obra)
+[SKIP] Krona: 0 itens (nao cobre nenhuma peca da obra)
+[SKIP] TopFusion: 0 itens (nao cobre nenhuma peca da obra)
+OK  TF: 19 itens -> TF.xlsx
+OK  Astra: 19 itens -> Astra.xlsx
+OK  Emmeti: 18 itens -> Emmeti.xlsx
+OK  Barbi: 16 itens -> Barbi.xlsx
+OK  Ultrapexx: 18 itens -> Ultrapexx.xlsx
+
+--- COBERTURA ---
+  3 fornecedor(es) competem: 1 pecas
+  4 fornecedor(es) competem: 1 pecas
+  5 fornecedor(es) competem: 17 pecas
+
+--- POR SISTEMA ---
+  PEX                 : 19 pecas

@@ -1,0 +1,18 @@
+RELATORIO DE COTACAO - TESTE_JOAO_DIAS
+Total de pecas no levantamento: 2
+
+[SKIP] Amanco: 0 itens (nao cobre nenhuma peca da obra)
+[SKIP] Tigre: 0 itens (nao cobre nenhuma peca da obra)
+[SKIP] Krona: 0 itens (nao cobre nenhuma peca da obra)
+[SKIP] TopFusion: 0 itens (nao cobre nenhuma peca da obra)
+OK  TF: 2 itens -> TF.xlsx
+OK  Astra: 2 itens -> Astra.xlsx
+OK  Emmeti: 2 itens -> Emmeti.xlsx
+OK  Barbi: 2 itens -> Barbi.xlsx
+OK  Ultrapexx: 2 itens -> Ultrapexx.xlsx
+
+--- COBERTURA ---
+  5 fornecedor(es) competem: 2 pecas
+
+--- POR SISTEMA ---
+  PEX                 : 2 pecas
