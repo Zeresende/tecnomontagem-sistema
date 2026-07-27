@@ -1,0 +1,98 @@
+# PADRAO_SPHE.yaml
+# Regra de orcamento de PEX do projetista SPHE (Tecnomontagem).
+# Extraida das planilhas e validada com ERRO ZERO nas 5 obras (19/06 + 03/07/2026).
+# Ver RELATORIO-ANALISE-SPHE.html. Scripts de evidencia: _analise/10-18.
+
+projetista: SPHE
+sistema: PEX
+construtora_observada: Cyrela
+
+# --- NOMENCLATURA DE DN ---
+dn:
+  comerciais: [16, 20, 25, 32]   # PEX Serie 5 (Emmeti) - DN comercial direto
+  conversao_pompeu: false        # SPHE NAO usa 13/16/19/25
+  serie: "5"
+
+# --- REGRA DETERMINISTICA (validada erro zero: 88 linhas em 3 obras + 78 em Brooklyn/Peak) ---
+calculo:
+  classificador_por_unidade:      # coluna F da planilha decide a regra da linha
+    RL: "tubo em rolo:   compra = ROUNDUP( soma(receita*contagem) * 1,07 / tamanho_rolo )"
+    BR: "tubo em barra:  idem, barra 5,80m"
+    UN: "conexao/peca:   compra = soma(receita*contagem) EXATA, sem margem"
+  margem_tubo: 1.07               # 7% so em tubo (confirmado nas 5 obras)
+  arredondamento: ROUNDUP         # por rolo inteiro; conexao nao arredonda
+  tamanho_rolo_m: {16: 200, 20: 100, 25: 100, 32: 50}   # conferir na descricao da peca
+  produtos_tubo: ["TUBO PEX ... SERIE 5 ... X <rolo>M", "TUBO PERT ... ROLO <rolo>M <cor>"]
+  atencao_parser: "NAO filtrar por 'TUBO PEX' apenas - Brooklyn/Peak usam TUBO PERT (azul/vermelho/translucido)"
+
+# --- REGRA-MAE (validada leave-one-out no Brooklyn, script 16) ---
+origem_das_receitas:
+  kits_chicotes:
+    fonte: biblioteca              # transferem entre obras: banho +5%, lavabo -8/-14%, cozinha -7/+20%
+    confianca: alta
+  ramal_aereo:
+    fonte: desenho_da_obra         # NAO transfere: -100% a +140% entre obras (geometria propria)
+    confianca_emprestimo: baixa
+  prioridade: "receita PROPRIA da obra > emprestada da biblioteca (script 15)"
+
+# --- CONTAGENS (parser universal script 17: 97/133 colunas exatas nas 5 obras) ---
+contagens:
+  M1_matriz_predio:
+    o_que: "abas PRÉDIO*: conta marcas (X ou codigo TP*) por final abaixo do cabecalho FINAIS"
+    cobre: "colunas de ramal/manifold com finais no header (multi-torre: aba da torre correspondente)"
+    invariantes: "soma AF = soma AQ = total de aptos; grupos de colunas com mesmos finais fecham com a matriz"
+  M2_industrializacao:
+    o_que: "bloco INDUSTRIALIZACAO no RESUMO lista contagens prontas por kit (Edition, parcial nas demais)"
+  M3_ambientes:
+    o_que: "totais de ambiente do RESUMO (travessa nao-manifold = total de aptos; chuveiro = banhos)"
+  residuo_tacito:                  # unicos casos que o parser NAO deriva sozinho
+    - "alocacao terreo/20o/duplex nas colunas (Living: 78/82/4; perguntas 1.1-1.5 do pacote Hederson)"
+    - "uniformizacao p/ cima (Brooklyn: ramal cont=40 com matriz=39)"
+    - "folhas F.1110/F.1116/F.1117 x tipologias TP* (Peak)"
+
+# --- ASSINATURA NO DWG (como a SPHE desenha) ---
+dwg:
+  camadas_tubo:
+    agua_fria: "HAF-TUB-*"
+    agua_quente: "HAQ-TUB-*"
+    prumada: "PRU-F / PRU-Q"
+    esgoto_pvc: ["PB-*", "PR-*"]   # ignorar para PEX
+  sufixo_ramal_aereo: "EXO-TET"    # exposto no teto = RAMAL AEREO da planilha
+  validacao_trilha_dxf:            # script 18 (03/07)
+    living_AF: "EXO-TET 50,42 m/apto vs receita 49,75 = 1,01x  <- TRILHA PROVADA"
+    living_AQ: "0,85x (residuo = candidato ao complemento vertical de cabeca)"
+    pamaris: "1,2-1,6x - calibrar sufixos (QS/R) e aptos por desenho TIP*"
+    excluir_camadas: "LEG|REF|TAB|DET|PREVIS (legendas/tabelas duplicam geometria)"
+  dn_encoding: "nome de bloco (ex: PRUM-PX-32, SATT-25). NAO em cor/lineweight/%%C."
+  unidade: metros
+  modelo_federado: true            # arq+estrutura+hidraulica via xref; filtrar camadas hidraulicas
+
+# --- ABAS DO QUANTITATIVO ---
+quantitativo:
+  abas_tubo: [RAMAL, KITS, CHICOTES]
+  passante_laje: "aba oculta (Astra)"
+  coluna_E: descricao_da_peca
+  coluna_F: unidade (RL/BR/UN)
+  coluna_G: "Qtde Total Levantada (rolos p/ tubo, unidades p/ conexao)"
+  colunas_Hmais: "receita: qtd da peca por kit/final"
+  linha_contagem: "geralmente L3 (auto-detectar pela linha com mais celulas numericas)"
+  decomposicao_varia_por_obra:
+    Living: "RAMAL AEREO por grupo de finais"
+    Edition: "por ambiente (CHICOTE COZINHA/LAVABO/TIPO)"
+    Pamaris: "CHICOTE BANHO 1/2 + KIT CHUVEIRO"
+    Peak: "por folha de detalhe (F.1110/F.1116/F.1117) x torre"
+
+# --- STATUS DOS DADOS (corrigido 03/07: as 5 sao gabaritos completos) ---
+obras:
+  20241385_LIVING_7409:   {quantitativo: completo, dxf: ok}
+  20241390_EDITION_7432:  {quantitativo: completo, dxf: ok}
+  20251670_PAMARIS:       {quantitativo: completo, dxf: ok}
+  20251430_BROOKLYN_7332: {quantitativo: completo, dxf: ok, nota: "tubo em linhas PERT; ramais reais no arquivo"}
+  20251533_PEAK_QUA:      {quantitativo: completo, dxf: ok, nota: "tubo em linhas PERT azul/vermelho"}
+
+# --- PENDENTE COM HEDERSON (pacote validacao-hederson/) ---
+pendente_hederson:
+  - alocacao_terreo_20_duplex (Living, perguntas 1.1-1.5)
+  - complemento_vertical_de_cabeca (tabela 2.2; hipotese: residuo AQ 15% da trilha DXF)
+  - prumada_PRUM-PX-32_340 = 17 prumadas x 20 pav?
+  - confirmar caminho do ramal em obra nova (DXF pre-medido) + teste em paralelo

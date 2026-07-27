@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataset por Projetista — Tecnomontagem</title>
+  <style>
+    :root {
+      --tinta: #1f2937;
+      --acento: #2563eb;
+      --linha: #e5e7eb;
+      --fundo-bloco: #f8fafc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+      color: var(--tinta);
+      background: #ffffff;
+      line-height: 1.6;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+      font-size: 16px;
+    }
+    header { border-bottom: 3px solid var(--acento); padding-bottom: 20px; margin-bottom: 36px; }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--acento);
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 28px; font-weight: 700; line-height: 1.25; }
+    .sub { color: #6b7280; font-size: 15px; margin-top: 6px; }
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      margin: 38px 0 14px;
+      padding-left: 12px;
+      border-left: 4px solid var(--acento);
+    }
+    h3 { font-size: 16px; font-weight: 600; margin: 20px 0 8px; }
+    p { margin-bottom: 12px; }
+    ul { margin: 0 0 14px 22px; }
+    li { margin-bottom: 6px; }
+    strong { font-weight: 600; }
+    .bloco {
+      background: var(--fundo-bloco);
+      border: 1px solid var(--linha);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 15px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+    th { background: var(--fundo-bloco); font-weight: 600; }
+    code {
+      font-family: 'Consolas', monospace;
+      background: var(--fundo-bloco);
+      border: 1px solid var(--linha);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-size: 14px;
+    }
+    pre {
+      background: var(--fundo-bloco);
+      border: 1px solid var(--linha);
+      border-radius: 10px;
+      padding: 18px 22px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+    .destaque {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    .destaque .titulo { font-weight: 700; color: var(--acento); margin-bottom: 6px; }
+    footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--linha); color: #9ca3af; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="tag">Tecnomontagem · Automação de Orçamento</span>
+    <h1>Dataset por Projetista — Especificação</h1>
+    <p class="sub">Base de pares projeto + gabarito para extrair padrões e construir a biblioteca de receitas · 19/06/2026</p>
+  </header>
+
+  <h2>1. Objetivo</h2>
+  <p>
+    Reunir um conjunto de obras já fechadas, organizado <strong>por projetista</strong>, para transformar a variação
+    entre projetistas em regra extraível. Cada par de arquivos permite medir a diferença entre o que o sistema extrai
+    do DWG e o que o Hederson lança de fato — diferença que representa o conhecimento técnico dele (conversão de DN,
+    complementos verticais, contagem de conexões).
+  </p>
+  <div class="destaque">
+    <div class="titulo">Princípio do dataset</div>
+    <p style="margin:0">
+      A variação não é aleatória, é por projetista. Cada projetista tem uma assinatura (esquema de layers, convenção de DN,
+      onde mora a geometria). Agrupado por projetista, o padrão deixa de ser surpresa e vira regra. O backtest João Dias já
+      provou que a cadeia DWG → quantidade reproduz com erro zero quando o gabarito está disponível.
+    </p>
+  </div>
+
+  <h2>2. O que é um par do dataset</h2>
+  <p>Cada obra entra com três artefatos. O DWG é a entrada; os outros dois são gabaritos de camadas diferentes:</p>
+  <table>
+    <thead>
+      <tr><th>Artefato</th><th>O que carrega</th><th>Valida</th><th>Prioridade</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>DWG</strong> original</td>
+        <td>Geometria da rede (entrada do sistema)</td>
+        <td>—</td>
+        <td>Obrigatório</td>
+      </tr>
+      <tr>
+        <td><strong>OBRA-QUANTITATIVO</strong> preenchido</td>
+        <td>Metros + conexões + receita de kit (abas RAMAL/KITS/PRÉDIO)</td>
+        <td>Extração do CAD</td>
+        <td>Máxima</td>
+      </tr>
+      <tr>
+        <td><strong>Proposta final</strong> do cliente (PDF R0)</td>
+        <td>Valores dos 6 blocos (material + chapa + montagem + DECA)</td>
+        <td>Composição financeira</td>
+        <td>Bônus</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    A proposta do cliente <strong>não substitui</strong> o quantitativo: ela já está convertida em dinheiro e agregada por
+    apto, então não confere metragem. Serve para a outra camada — a composição dos 6 blocos (item da call de 30 min).
+  </p>
+
+  <h2>3. Critério de seleção</h2>
+  <ul>
+    <li><strong>Obra fechada</strong> — só obras já orçadas e enviadas têm gabarito real. Template virgem não entra.</li>
+    <li><strong>Par completo</strong> — DWG + quantitativo preenchido no mínimo. Sem o gabarito, a obra não serve.</li>
+    <li><strong>3 a 5 obras por projetista</strong> — 1 é anedota, 2 pode ser coincidência, 3+ confirma padrão.</li>
+    <li><strong>Profundidade, não largura</strong> — melhor cobrir 2-3 projetistas a fundo do que 1 obra de cada.</li>
+    <li><strong>Projetistas recorrentes primeiro</strong> — priorizar quem mais aparece na fila de 77 orçamentos/mês.</li>
+  </ul>
+
+  <h2>4. Estrutura de pastas</h2>
+  <pre>golden/
+  CYRELA/
+    JOAO_DIAS/
+      entrada/     -> *.dwg (+ .dxf convertido via ODA)
+      gabarito/    -> OBRA-QUANTITATIVO.xlsx, proposta-R0.pdf
+      regras.yaml  -> convenções observadas nesta obra
+    ESTACAO_LAPA/
+    VILA_PRUDENTE/
+    PADRAO_CYRELA.yaml   <- convenções consolidadas do projetista
+  POMPEU/
+    CASA_BRANCA/
+    PADRAO_POMPEU.yaml
+  ...</pre>
+  <p>
+    O entregável por projetista é o <code>PADRAO_*.yaml</code>. Ele alimenta o <code>construtoras.xlsx</code> já previsto
+    (regra de DN, família A/B/C, fornecedor preferencial).
+  </p>
+
+  <h2>5. O que extrair de cada projetista</h2>
+  <div class="bloco">
+    <h3 style="margin-top:0">Camada CAD (do DWG + quantitativo)</h3>
+    <ul style="margin-bottom:0">
+      <li>Unidade do desenho (cm ou m) — sempre verificar antes de medir</li>
+      <li>Esquema de layers — segregado por bitola, DN no texto, ou layer 0 redesenhado</li>
+      <li>Onde mora a geometria — modelspace ou dentro de blocos (virtual_entities)</li>
+      <li>Conversão de DN do projeto para o comercial (ex.: Pompeu 13→16, 16→20, 19→25, 25→32)</li>
+      <li>Dicionário de blocos → peça/conexão</li>
+      <li>Regras de complemento vertical — ponto de chuveiro +X, lavatório +Y, entrada +Z</li>
+      <li>Família de PRÉDIO — A por tipologia, B por ambiente, C escalar</li>
+      <li>Arredondamento e perda — ceil por trecho + 5% no total</li>
+    </ul>
+  </div>
+  <div class="bloco">
+    <h3 style="margin-top:0">Camada financeira (da proposta do cliente)</h3>
+    <ul style="margin-bottom:0">
+      <li>Composição dos 6 blocos — material (kit + ramal), chapa, montagem, DECA</li>
+      <li>Origem do valor de chapa e montagem — R$/m², percentual do material ou tabela própria</li>
+      <li>Fornecedores efetivamente usados na obra</li>
+    </ul>
+  </div>
+
+  <h2>6. Ordem de ataque</h2>
+  <table>
+    <thead>
+      <tr><th>Ordem</th><th>Projetista / Construtora</th><th>Por quê primeiro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Cyrela</td><td>Já temos 3 obras (João Dias, Estação Lapa, Vila Prudente) e o esquemático de torres é determinístico</td></tr>
+      <tr><td>2</td><td>Pompeu</td><td>Regra de conversão de DN já mapeada</td></tr>
+      <tr><td>3</td><td>Demais</td><td>Conforme volume na fila de 77/mês</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. Pedido objetivo ao Hederson</h2>
+  <div class="destaque">
+    <p style="margin:0">
+      <strong>"Me separa 3 a 5 obras que você já orçou e fechou, dos seus 2-3 projetistas principais. De cada uma preciso
+      de duas coisas no mínimo: o DWG original e o OBRA-QUANTITATIVO preenchido que você usou. Se tiver a proposta final
+      que foi pro cliente, manda também — ajuda na parte de chapa e montagem."</strong>
+    </p>
+  </div>
+  <p>
+    Se o tempo dele apertar, a prioridade é <strong>DWG + quantitativo preenchido</strong>. É esse par que destrava a
+    biblioteca de receitas por projetista, validada contra gabarito real.
+  </p>
+
+  <footer>
+    Tecnomontagem · Especificação do dataset por projetista · gerado em 19/06/2026 · uso interno do projeto de automação de orçamento
+  </footer>
+</body>
+</html>

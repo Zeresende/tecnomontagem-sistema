@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRD — Automação de Orçamento de Kits · Tecnomontagem</title>
+  <style>
+    :root {
+      --tinta: #1f2937;
+      --acento: #2563eb;
+      --linha: #e5e7eb;
+      --fundo-bloco: #f8fafc;
+      --alerta: #b45309;
+      --alerta-fundo: #fffbeb;
+      --alerta-linha: #fde68a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+      color: var(--tinta);
+      background: #ffffff;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+      font-size: 16px;
+    }
+    header { border-bottom: 3px solid var(--acento); padding-bottom: 20px; margin-bottom: 36px; }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--acento);
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 28px; font-weight: 700; line-height: 1.25; }
+    .sub { color: #6b7280; font-size: 15px; margin-top: 6px; }
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      margin: 40px 0 14px;
+      padding-left: 12px;
+      border-left: 4px solid var(--acento);
+    }
+    h3 { font-size: 16px; font-weight: 600; margin: 20px 0 8px; }
+    p { margin-bottom: 12px; }
+    ul, ol { margin: 0 0 14px 22px; }
+    li { margin-bottom: 6px; }
+    strong { font-weight: 600; }
+    .bloco {
+      background: var(--fundo-bloco);
+      border: 1px solid var(--linha);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 14.5px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+    th { background: var(--fundo-bloco); font-weight: 600; }
+    code {
+      font-family: 'Consolas', monospace;
+      background: var(--fundo-bloco);
+      border: 1px solid var(--linha);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-size: 14px;
+    }
+    pre {
+      background: var(--fundo-bloco);
+      border: 1px solid var(--linha);
+      border-radius: 10px;
+      padding: 18px 22px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+    .destaque {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    .destaque .titulo { font-weight: 700; color: var(--acento); margin-bottom: 6px; }
+    .alerta {
+      background: var(--alerta-fundo);
+      border: 1px solid var(--alerta-linha);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .alerta .titulo { font-weight: 700; color: var(--alerta); margin-bottom: 6px; }
+    .status { font-weight: 600; font-size: 13.5px; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+    .status-ok { background: #dcfce7; color: #166534; }
+    .status-and { background: #dbeafe; color: #1e40af; }
+    .status-bloq { background: #fee2e2; color: #991b1b; }
+    .status-nao { background: #f3f4f6; color: #4b5563; }
+    footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--linha); color: #9ca3af; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="tag">Tecnomontagem · Consultoria GGV — Estruturação Comercial</span>
+    <h1>PRD — Automação de Orçamento de Kits</h1>
+    <p class="sub">Documento de requisitos do produto · versão 1.0 · 24/07/2026 · Responsável: José Resende Pereira Júnior</p>
+  </header>
+
+  <h2>1. Resumo executivo</h2>
+  <p>
+    A Tecnomontagem monta e orça kits hidráulicos (PEX, PPR, PVC) para empreendimentos residenciais. Hoje o processo
+    de orçamento é manual e concentra em uma única pessoa: <strong>Hederson Barbosa</strong>, dono-operador da empresa.
+    Este projeto constrói um sistema que absorve as etapas repetitivas do orçamento — do levantamento de quantidades
+    ao envio de cotação e à montagem da proposta final — sem retirar do Hederson o julgamento técnico que hoje só
+    existe na cabeça dele.
+  </p>
+  <p>
+    A meta interina é liberar entre 28 e 56 horas por mês da agenda dele. A meta de longo prazo é transformar o
+    método dele em conhecimento codificado, replicável por outra pessoa.
+  </p>
+
+  <h2>2. Contexto e problema</h2>
+  <div class="bloco">
+    <p><strong>Volume:</strong> 77 orçamentos/mês.</p>
+    <p><strong>Tempo médio por orçamento:</strong> ~60 min (47 min de trabalho direto + 13 min de atrito administrativo) — medido a partir da filmagem das 7 etapas do processo, maio/2026.</p>
+    <p style="margin-bottom:0"><strong>Total dedicado a orçamento:</strong> ~77h/mês do Hederson.</p>
+  </div>
+  <p>
+    O processo tem sete etapas, do levantamento no AutoCAD à proposta final em PDF. Cada etapa depende de decisões
+    que moram na experiência do Hederson: conversão de diâmetro por projetista, contagem de conexões feita a olho,
+    composição do valor final (kit, ramal, chapa, montagem, metais). A dor não é só o tempo — é a dependência.
+    Enquanto o orçamento inteiro passa por uma pessoa só, a empresa não escala sem treinar um segundo Hederson, o
+    que ele mesmo reconhece ser difícil: <em>"a pessoa tem que ter conhecimento de leitura de projeto e de obra
+    para entender o que precisa."</em>
+  </p>
+
+  <h2>3. Objetivo do produto</h2>
+  <div class="destaque">
+    <div class="titulo">Objetivo central</div>
+    <p style="margin:0">
+      Absorver as etapas do orçamento que são repetitivas e determinísticas, e transformar em regra codificada o
+      conhecimento tácito que hoje só existe na experiência do Hederson.
+    </p>
+  </div>
+  <p><strong>Não é objetivo deste produto</strong> substituir o julgamento técnico do Hederson. O sistema propõe um
+  pré-orçamento; ele valida em minutos, não em horas.</p>
+
+  <h2>4. Métricas de sucesso</h2>
+  <table>
+    <thead>
+      <tr><th>Métrica</th><th>Linha de base</th><th>Meta interina</th><th>Meta de longo prazo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tempo por orçamento</td><td>60 min</td><td>~35–40 min (5 min de validação + resto automático)</td><td>~15 min</td></tr>
+      <tr><td>Horas/mês do Hederson em orçamento</td><td>77h</td><td>~28–49h*</td><td>~8h (-90%)</td></tr>
+      <tr><td>Horas liberadas/mês</td><td>—</td><td>28–56h*</td><td>~69h</td></tr>
+      <tr><td>Erro no levantamento de kits (biblioteca por projetista)</td><td>não medido</td><td>0% nas obras validadas</td><td>0% em obra nova, sem gabarito</td></tr>
+      <tr><td>Payback do investimento</td><td>—</td><td>2–3 meses (projeção original, ver nota)</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <div class="alerta">
+    <div class="titulo">*Nota de recalibração</div>
+    <p style="margin:0">
+      A promessa original de 56h/mês liberadas assumia que a etapa de contagem manual no AutoCAD seria pouco
+      afetada pela automação. O trabalho técnico já mostrou que parte dessa etapa pode ser absorvida (ver seção 9),
+      mas o alcance real depende de quanto da metragem de ramal dá para medir direto do desenho — e isso varia por
+      projetista e por obra. Tratar 56h/mês como teto otimista, não como compromisso fechado, até fechar a trilha
+      de ramal.
+    </p>
+  </div>
+
+  <h2>5. Usuários</h2>
+  <ul>
+    <li><strong>Usuário primário:</strong> Hederson Barbosa, dono-operador e único orçamentista da Tecnomontagem hoje.</li>
+    <li><strong>Usuário secundário (futuro):</strong> qualquer pessoa que a Tecnomontagem treine para orçamento, uma vez que o conhecimento tácito esteja capturado em regra.</li>
+    <li><strong>Não usuários diretos:</strong> fornecedores e construtoras recebem planilhas e e-mails gerados pelo sistema, mas não operam nele.</li>
+  </ul>
+
+  <h2>6. Escopo</h2>
+  <h3>Dentro do escopo</h3>
+  <table>
+    <thead>
+      <tr><th>Frente</th><th>Entrega</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Fase 1</td><td>Cotação multifornecedor por catálogo e equivalência de código</td><td><span class="status status-and">Em andamento</span></td></tr>
+      <tr><td>Fase 2</td><td>Lançamento de pedido via API REST do Maxiprod</td><td><span class="status status-bloq">Bloqueado</span></td></tr>
+      <tr><td>Fase 3</td><td>Consolidação do resumo (6 blocos: kit, ramal, chapa, montagem, DECA, valor)</td><td><span class="status status-bloq">Bloqueado</span></td></tr>
+      <tr><td>Fase 4</td><td>Geração automática da proposta R0 em PDF</td><td><span class="status status-nao">Não iniciado</span></td></tr>
+      <tr><td>Trilha CAD</td><td>Biblioteca de receitas por projetista (piloto: SPHE)</td><td><span class="status status-ok">Validado, erro zero em 5 obras</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fora do escopo</h3>
+  <ul>
+    <li><strong>Orçamento de metais e registros DECA</strong> — decisão de maio/2026, ROI baixo frente ao esforço.</li>
+    <li><strong>Contagem de conexões por IA de visão, sem validação humana</strong> — testes indicam erro de 10 a 20% em desenho denso; não substitui o julgamento do Hederson hoje.</li>
+    <li><strong>Cruzamento entre planta arquitetônica e hidráulica</strong> para detecção preventiva de erro — pertence ao estágio "Inteligente" do roadmap, não ao MVP.</li>
+    <li><strong>Marketplace multifornecedor e expansão para elétrico, gás e revestimento</strong> — visão de longo prazo, fora do escopo atual.</li>
+    <li><strong>Decisão de plataforma de distribuição</strong> (.exe local versus SaaS web) — decisão B5 segue em aberto com o Hederson; o MVP roda localmente, sem servidor.</li>
+  </ul>
+
+  <h2>7. Arquitetura da solução</h2>
+  <p>
+    Três caminhos técnicos foram avaliados para o levantamento de quantidades. O caminho A (IA lê a rede do
+    projetista direto) esbarra na falta de padrão de layers entre projetistas. O caminho B (Hederson continua
+    redesenhando, o sistema só soma) não toca o gargalo real, que é a contagem de conexões — trabalho de
+    julgamento, não repetição. O caminho C, híbrido, foi o escolhido: o sistema entrega um pré-quantitativo
+    determinístico e o Hederson valida em cerca de 5 minutos, sem perder o controle técnico.
+  </p>
+  <pre>DXF (ezdxf) → metragem determinística por sistema (agua fria/quente, gás)
+Biblioteca de receitas por projetista → conexões e composição de kit
+        ↓
+Validação humana (~5 min) — Hederson confirma o pré-quantitativo
+        ↓
+Fase 1: planilhas de cotação por fornecedor
+Fase 2: lançamento no Maxiprod (API REST)
+Fase 3: resumo consolidado (6 blocos)
+Fase 4: proposta R0 em PDF</pre>
+  <p><strong>Stack:</strong> Excel como interface (ambiente que o Hederson domina), Python (openpyxl, pandas,
+  ezdxf) como motor de processamento, PyInstaller para empacotar em executável local. Sem servidor, sem nuvem, na
+  versão atual — decisão de distribuição B3 pode revisitar isso mais adiante.</p>
+
+  <h2>8. Requisitos funcionais por fase</h2>
+  <h3>Fase 1 — Cotação por fornecedor</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Requisito</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>RF1.1</td><td>Catálogo de peças canônicas</td><td><span class="status status-ok">Concluído</span> — 1.883 peças</td></tr>
+      <tr><td>RF1.2</td><td>Tabela de equivalência peça × fornecedor</td><td><span class="status status-ok">Concluído</span> — 4.377 pares</td></tr>
+      <tr><td>RF1.3</td><td>Geração de planilha de levantamento por obra</td><td><span class="status status-ok">Concluído</span></td></tr>
+      <tr><td>RF1.4</td><td>Importação automática de quantitativo preenchido, com match por código, descrição e similaridade</td><td><span class="status status-ok">Concluído</span> — erro zero validado na obra João Dias</td></tr>
+      <tr><td>RF1.5</td><td>Geração de planilha de cotação individual por fornecedor</td><td><span class="status status-ok">Concluído</span></td></tr>
+      <tr><td>RF1.6</td><td>Proteção contra sobrescrita de planilha já preenchida, com backup automático</td><td><span class="status status-ok">Concluído</span></td></tr>
+      <tr><td>RF1.7</td><td>Disparo automático de e-mail de cotação</td><td><span class="status status-bloq">Bloqueado</span> — falta e-mail e contato comercial dos 9 fornecedores</td></tr>
+      <tr><td>RF1.8</td><td>Empacotamento em executável (PyInstaller)</td><td><span class="status status-nao">Não iniciado</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fase 2 — Maxiprod (API REST)</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Requisito</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>RF2.1</td><td>Autenticação via API REST (login + token, permissão USU009)</td><td><span class="status status-bloq">Confirmado tecnicamente, bloqueado por permissão de usuário multi-CNPJ</span></td></tr>
+      <tr><td>RF2.2</td><td>Criação de pedido de venda via API</td><td><span class="status status-nao">Não iniciado</span></td></tr>
+      <tr><td>RF2.3</td><td>Verificação de item cadastrado (verde) versus item novo (vermelho)</td><td><span class="status status-nao">Não iniciado</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fase 3 — Consolidação do resumo</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Requisito</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>RF3.1</td><td>Consolidação dos 6 blocos (kit, ramal, chapa, montagem, DECA, valor por apartamento)</td><td><span class="status status-bloq">Bloqueado</span> — depende de call de 30 min com o Hederson sobre a composição de chapa e montagem</td></tr>
+      <tr><td>RF3.2</td><td>Leitura das planilhas devolvidas pelos fornecedores e montagem do comparativo</td><td><span class="status status-nao">Não iniciado</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fase 4 — Proposta final</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Requisito</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>RF4.1</td><td>Template de proposta R0 (capa, plantas, memória de cálculo, resumo, orçamentos abertos)</td><td><span class="status status-nao">Não iniciado</span> — depende de exemplo real de proposta enviado pelo Hederson</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9. Trilha CAD — biblioteca de receitas por projetista</h2>
+  <p>
+    Esta é a frente que ataca o gargalo real: o levantamento de quantidades no AutoCAD, etapa que consome a maior
+    parte dos 60 minutos por orçamento. A hipótese testada: agrupar obras já fechadas por projetista revela um
+    método consistente, porque a variação entre orçamentos não é aleatória — é assinatura de quem desenhou o
+    projeto.
+  </p>
+  <p>
+    O piloto foi feito com o projetista <strong>SPHE</strong> (5 obras Cyrela). A fórmula de compra por rolo foi
+    decifrada e validada com erro zero, DN a DN, nas 5 obras:
+  </p>
+  <pre>compra_rolos = ROUNDUP( (Σ receita_kit × contagem_kit) / tamanho_rolo × 1,07 , 0 )</pre>
+  <div class="destaque">
+    <div class="titulo">Regra-mãe descoberta</div>
+    <p style="margin:0">
+      O <strong>kit</strong> (chuveiro, chicote de banho, cozinha) vem de biblioteca e transfere entre obras do
+      mesmo projetista. O <strong>ramal aéreo</strong> (tubulação de teto) não transfere — no teste de validação
+      cruzada, a receita emprestada de outra obra variou de -100% a +140% frente ao real. Ramal precisa ser medido
+      no desenho de cada obra, não herdado de biblioteca.
+    </p>
+  </div>
+  <p>
+    Um teste cego em obra nova sem gabarito (HM89, 216 apartamentos) confirmou que a parte de kit se transfere
+    com confiança alta; a parte de ramal e prumada segue como pendência, documentada e não inventada. Próximo
+    passo desta trilha: repetir o mesmo processo, projetista por projetista, até cobrir a carteira ativa da
+    Tecnomontagem.
+  </p>
+
+  <h2>10. Status atual (24/07/2026)</h2>
+  <table>
+    <thead><tr><th>Frente</th><th>Situação</th></tr></thead>
+    <tbody>
+      <tr><td>Dados-base (catálogo, equivalências)</td><td>~60% — falta e-mail, IPI, frete e pedido mínimo dos fornecedores</td></tr>
+      <tr><td>Leitura CAD — kits</td><td>Validado, erro zero na biblioteca SPHE (5 obras)</td></tr>
+      <tr><td>Leitura CAD — ramal</td><td>Não transfere entre obras; exige medição própria por obra</td></tr>
+      <tr><td>Cotação multifornecedor</td><td>~60% — falta disparo automático de e-mail</td></tr>
+      <tr><td>Consolidação (6 blocos)</td><td>Bloqueado pela composição de chapa e montagem</td></tr>
+      <tr><td>Maxiprod</td><td>Bloqueado pela permissão de API</td></tr>
+      <tr><td>Proposta em PDF</td><td>Bloqueado pela falta de template/exemplo R0</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Nota de infraestrutura: a pasta local do projeto foi restaurada de backup do Google Drive em 02/07/2026, após
+    desaparecimento do disco local. O histórico do repositório git foi recriado, com backup automático em duas
+    camadas (bundle no Drive e push para repositório privado no GitHub) — sem perda de trabalho técnico.
+  </p>
+
+  <h2>11. Riscos e dependências</h2>
+  <ul>
+    <li><strong>Dependência crítica única:</strong> quase todo avanço das Fases 1 a 3 depende de resposta do Hederson (e-mails de fornecedores, composição do orçamento, permissão da API Maxiprod). Ele é ao mesmo tempo o gargalo do processo atual e o ponto de validação do projeto que resolve esse gargalo.</li>
+    <li><strong>Risco técnico:</strong> ramal aéreo não transfere entre obras do mesmo projetista — a automação de metragem de ramal precisa de medição por obra, não de biblioteca. Isso limita o quanto a etapa de levantamento pode ser absorvida no curto prazo.</li>
+    <li><strong>Risco de escopo:</strong> a promessa original de 56h/mês liberadas pode estar otimista frente aos dados reais da trilha CAD. Recalibrar a expectativa com o Hederson antes de fechar contrato de resultado.</li>
+    <li><strong>Risco operacional:</strong> já houve um incidente de perda de pasta local, recuperado via backup. O backup automático em duas camadas mitiga recorrência, mas reforça a importância de manter a rotina ativa.</li>
+  </ul>
+
+  <h2>12. Roadmap</h2>
+  <table>
+    <thead><tr><th>Estágio</th><th>Prazo</th><th>Entrega</th><th>Ganho projetado</th></tr></thead>
+    <tbody>
+      <tr><td>MVP</td><td>4–6 semanas</td><td>Catálogo, planilhas de cotação, e-mail automático, proposta básica</td><td>-50h/mês</td></tr>
+      <tr><td>Robusto</td><td>8–10 semanas</td><td>Leitura DXF ampliada, DECA, chapa, Maxiprod</td><td>-65h/mês</td></tr>
+      <tr><td>Inteligente</td><td>12–16 semanas</td><td>Dashboard, modelo preditivo, cruzamento planta × hidráulica</td><td>a definir</td></tr>
+      <tr><td>Visionário</td><td>12 meses</td><td>Marketplace, API pública, expansão para outros domínios técnicos</td><td>tese de longo prazo</td></tr>
+    </tbody>
+  </table>
+
+  <h2>13. Pendências abertas com o Hederson</h2>
+  <p>Ordenadas pelo que destrava a fila mais rápido:</p>
+  <ol>
+    <li><strong>Prioridade A:</strong> e-mail e contato comercial dos 9 fornecedores; call de 30 min sobre a composição dos 6 blocos do orçamento; política de IPI, frete e pedido mínimo por fornecedor.</li>
+    <li><strong>Prioridade B:</strong> validação do pacote SPHE — confirmação da regra de alocação por pavimento, prumada e complemento vertical tácito.</li>
+    <li><strong>Prioridade C:</strong> decisões de arquitetura em aberto (B1 a B5) — biblioteca de receitas versus captura por obra, campo simples versus assistente guiado, distribuição local versus web, formato de honorário.</li>
+    <li><strong>Prioridade D:</strong> acesso e permissão de API do Maxiprod (USU009) para destravar a Fase 2.</li>
+  </ol>
+
+  <h2>14. Referências</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Local</th></tr></thead>
+    <tbody>
+      <tr><td>Pasta raiz do projeto</td><td><code>Clientes\Tecnomontagem\automatização kits\</code></td></tr>
+      <tr><td>Código vivo (Fases 1–4)</td><td><code>sistema\</code></td></tr>
+      <tr><td>Biblioteca de receitas SPHE</td><td><code>Análise projetista\PADRAO_SPHE.yaml</code></td></tr>
+      <tr><td>Planilha de pendências vigente (39 itens)</td><td><code>Levantamento de Informações _ Hederson\11.06.2026\</code></td></tr>
+      <tr><td>Especificação do dataset por projetista</td><td><code>docs\especificacao-dataset-projetistas.html</code></td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <p>Documento vivo — atualiza conforme decisões do Hederson e evolução técnica do projeto.</p>
+    <p>Tecnomontagem · Consultoria GGV — Estruturação Comercial · José Resende Pereira Júnior</p>
+  </footer>
+</body>
+</html>

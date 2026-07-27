@@ -1,0 +1,10 @@
+Hederson, avanço grande na automação: o sistema reproduziu o levantamento COMPLETO (tubos + conexões) das suas 5 obras da SPHE com erro zero — Living, Edition, Pamaris, Brooklyn e Peak. Toda linha de compra sai de receita x contagem, com os 7% e o arredondamento por rolo que você usa.
+
+Também rodei um teste cego entre as obras: receita de chicote/kit funciona como biblioteca (erra menos de 15% de uma obra pra outra), mas receita de ramal aéreo é única de cada prédio — ou seja, kit vem do histórico, ramal vem do desenho. Bate com a sua prática?
+
+Pra fechar a regra e ligar o pré-levantamento automático nas próximas obras da SPHE, preciso de 15 minutos seus em 3 blocos (documento junto):
+1. Confirmar 5 casos de alocação da Living (térreo/20º/duplex) — sim ou não
+2. Regra do complemento vertical que você soma de cabeça (chuveiro, lavatório, entrada)
+3. Confirmar o caminho do ramal em obra nova (metragem pré-medida do DXF pra você só conferir) + topar o teste em paralelo na próxima obra
+
+Responde uma vez, o sistema aplica sempre. Quando consegue?

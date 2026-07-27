@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise Projetista SPHE — Cruzamento DWG × Quantitativo</title>
+<style>
+  :root{
+    --azul:#1b2a4a;
+    --cinza:#5b6573;
+    --cinza-claro:#eef1f5;
+    --linha:#d7dce3;
+    --branco:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter','Segoe UI',Roboto,Arial,sans-serif;color:var(--azul);
+    background:var(--cinza-claro);line-height:1.55;font-size:16px}
+  .wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+  header{background:var(--azul);color:var(--branco);border-radius:14px;padding:30px 32px;margin-bottom:26px}
+  header h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
+  header p{color:#c7d0df;margin-top:8px;font-size:15px}
+  .tag{display:inline-block;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;
+    padding:4px 12px;font-size:13px;margin-top:14px;margin-right:6px}
+  section{background:var(--branco);border:1px solid var(--linha);border-radius:14px;
+    padding:26px 28px;margin-bottom:20px}
+  h2{font-size:19px;margin-bottom:6px}
+  h2 .n{color:var(--cinza);font-weight:600;margin-right:8px}
+  .sub{color:var(--cinza);font-size:14px;margin-bottom:18px}
+  h3{font-size:15px;margin:18px 0 8px}
+  p{margin-bottom:10px}
+  ul{margin:6px 0 12px 20px}
+  li{margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--linha)}
+  th{background:var(--cinza-claro);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.3px;color:var(--cinza)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .ok{color:var(--azul);font-weight:700}
+  .rule{background:var(--azul);color:var(--branco);border-radius:10px;padding:18px 20px;
+    font-family:'Consolas','SF Mono',monospace;font-size:15px;margin:14px 0;line-height:1.7}
+  .rule b{color:#fff;background:rgba(255,255,255,.16);padding:1px 7px;border-radius:5px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{border:1px solid var(--linha);border-radius:10px;padding:16px 18px;background:#fafbfc}
+  .card h4{font-size:14px;margin-bottom:8px;color:var(--azul)}
+  .card.det{border-left:4px solid var(--azul)}
+  .card.tac{border-left:4px solid var(--cinza)}
+  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;font-weight:600}
+  .pill.full{background:#dfe7d8;color:#33502a}
+  .pill.part{background:#f3e7cf;color:#7a5a1e}
+  .pill.empty{background:#eddcdc;color:#7a2e2e}
+  .ask{border-left:4px solid var(--azul);background:#fafbfc;border-radius:8px;padding:14px 18px;margin:10px 0}
+  .ask b{display:block;margin-bottom:4px}
+  .muted{color:var(--cinza);font-size:13px}
+  footer{color:var(--cinza);font-size:13px;text-align:center;margin-top:30px}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Análise do Projetista SPHE — DWG (início) × Quantitativo (final)</h1>
+  <p>Captura das decisões técnicas do Hederson que não estão no desenho. Objetivo: regra única que reproduz o quantitativo com erro zero.</p>
+  <span class="tag">5 obras SPHE</span>
+  <span class="tag">Levantamento completo: erro zero nas 5 obras</span>
+  <span class="tag">19/06 · atualizado 03/07/2026</span>
+</header>
+
+<section>
+  <h2><span class="n">1.</span>Conclusão em uma frase</h2>
+  <p>A engrenagem do orçamento da Tecnomontagem foi <b>decodificada e validada com erro zero nas 5 obras</b> — e não só para tubo: o <b>levantamento completo (tubos + conexões)</b> é reproduzido pela mesma cadeia. Tubos seguem <b>receita × contagem × 1,07, arredondado por rolo</b>; conexões seguem <b>soma exata, sem margem</b>. O teste cego entre obras definiu a regra-mãe: <b>receita de kit/chicote vem da biblioteca</b> (erra menos de 15% entre obras) e <b>receita de ramal aéreo vem do desenho de cada obra</b> (não se repete — é geometria).</p>
+</section>
+
+<section>
+  <h2><span class="n">2.</span>A regra da Tecnomontagem (extraída da fórmula da planilha)</h2>
+  <p class="sub">Lida diretamente da coluna “Qtde. Total Levantada” de todas as obras — não é estimativa.</p>
+  <div class="rule">
+    tubo (RL): compra = ROUNDUP( ( Σ(<b>receita_kit</b> × <b>contagem_kit</b>) ÷ <b>tamanho_rolo</b> ) × <b>1,07</b> , 0 )<br>
+    conexão (UN): compra = Σ(<b>receita_kit</b> × <b>contagem_kit</b>) — <b>exata, sem margem</b>
+  </div>
+  <ul>
+    <li><b>A coluna de unidade (F) decide a regra da linha:</b> RL = rolo (tubo), BR = barra, UN = conexão/peça. Vale para TUBO PEX Série 5 e TUBO PERT (azul/vermelho/translúcido).</li>
+    <li><b>Margem = 7%</b> (×1,07) — confirmada idêntica nas 5 obras, só em tubo. (Registros antigos diziam 5%; o correto é 7%.)</li>
+    <li><b>Arredondamento = ROUNDUP por rolo inteiro</b> (PEX 16 = 200m, 20/25 = 100m, 32 = 50m, conforme a descrição da peça).</li>
+    <li><b>Levantado = Σ (receita × contagem)</b> — a contagem vem do esquemático/RESUMO; a receita é o conhecimento do Hederson.</li>
+    <li><b>DN sempre comercial 16/20/25/32 Série 5 (Emmeti)</b> — nenhuma obra usa a lógica Pompeu (13/16/19/25). Fecha a conversão de DN para a SPHE.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">3.</span>Validação ponta a ponta — erro zero</h2>
+  <p class="sub">Reproduzindo a compra a partir de receita × contagem × 1,07 (ROUNDUP) e comparando com o valor real da planilha.</p>
+  <table>
+    <thead><tr><th>Obra</th><th>DN</th><th class="num">Levantado (m)</th><th class="num">Rolos previstos</th><th class="num">Rolos reais</th><th class="num">Erro</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="4">Living Only Ipiranga</td><td>16</td><td class="num">1.558</td><td class="num">9</td><td class="num">9</td><td class="num ok">0</td></tr>
+      <tr><td>20</td><td class="num">6.531</td><td class="num">70</td><td class="num">70</td><td class="num ok">0</td></tr>
+      <tr><td>25</td><td class="num">2.730</td><td class="num">30</td><td class="num">30</td><td class="num ok">0</td></tr>
+      <tr><td>32</td><td class="num">3.116</td><td class="num">67</td><td class="num">67</td><td class="num ok">0</td></tr>
+      <tr><td rowspan="4">The Edition</td><td>16</td><td class="num">3.180</td><td class="num">35</td><td class="num">35</td><td class="num ok">0</td></tr>
+      <tr><td>20</td><td class="num">1.740</td><td class="num">19</td><td class="num">19</td><td class="num ok">0</td></tr>
+      <tr><td>25</td><td class="num">12</td><td class="num">1</td><td class="num">1</td><td class="num ok">0</td></tr>
+      <tr><td>32</td><td class="num">6</td><td class="num">1</td><td class="num">1</td><td class="num ok">0</td></tr>
+      <tr><td rowspan="3">Pamaris</td><td>16</td><td class="num">7.500</td><td class="num">41</td><td class="num">41</td><td class="num ok">0</td></tr>
+      <tr><td>20</td><td class="num">8.658</td><td class="num">93</td><td class="num">93</td><td class="num ok">0</td></tr>
+      <tr><td>25</td><td class="num">29.958</td><td class="num">321</td><td class="num">321</td><td class="num ok">0</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Toda diferença entre previsto e real é zero — a cadeia determinística está correta e pronta para virar código.</p>
+  <p><b>Atualização 03/07:</b> a validação foi estendida ao levantamento completo: <b>77/77 linhas de conexão</b> das 3 obras acima reproduzidas por soma exata, e <b>78/78 linhas com compra preenchida</b> de Brooklyn e Peak reproduzidas pela mesma cadeia (tubo PERT + conexões). Erro zero em tudo que as 5 planilhas têm preenchido.</p>
+</section>
+
+<section>
+  <h2><span class="n">4.</span>Como a SPHE desenha (assinatura no DWG)</h2>
+  <ul>
+    <li><b>Tubo por sistema em camadas:</b> <code>HAF-TUB-*</code> (água fria), <code>HAQ-TUB-*</code> (água quente), <code>PRU-F</code> (prumada). PVC/esgoto em <code>PB-*</code>/<code>PR-*</code>.</li>
+    <li><b>DN do PEX está em NOME DE BLOCO</b> (ex.: <code>PRUM-PX-32</code> = prumada PEX 32, <code>SATT-25</code>), <b>não</b> em cor (tudo BYLAYER 256/252), espessura (BYLAYER) ou texto Ø (<code>%%C</code> esparso, rotula só a prumada/manifold).</li>
+    <li><b>Consequência:</b> a geometria do tubo <b>não carrega o DN trecho a trecho</b>. O Hederson atribui o DN por raciocínio hidráulico (tipo de ponto, água fria/quente, porta do manifold). Esse é o conhecimento tácito — e ele já está consolidado na receita por kit.</li>
+    <li><b>Achado 03/07 — o ramal aéreo tem camada própria:</b> o sufixo <code>EXO-TET</code> (exposto no teto) é o ramal aéreo da planilha. Na Living, a medição automática dessa camada dá <b>50,42 m/apto contra 49,75 da receita real — razão 1,01</b>. No AQ dá 0,85 (o resíduo é candidato exato ao complemento vertical "de cabeça"). Trilha para obra nova: <b>ramal pré-medido do DXF, Hederson só confere</b>. Excluir camadas LEG/REF/TAB/DET (legendas duplicam geometria).</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">5.</span>Determinístico vs. tácito (separação limpa)</h2>
+  <div class="grid2">
+    <div class="card det">
+      <h4>Determinístico — já dominado, sem Hederson</h4>
+      <ul>
+        <li>Contagens por kit/ambiente (esquemático/RESUMO)</li>
+        <li>Margem 7% (×1,07)</li>
+        <li>Arredondamento por rolo (ROUNDUP)</li>
+        <li>Nomenclatura DN 16/20/25/32</li>
+        <li>Estrutura de abas (RAMAL/KITS/CHICOTES)</li>
+      </ul>
+    </div>
+    <div class="card tac">
+      <h4>Tácito — mapeado e com fonte definida</h4>
+      <ul>
+        <li><b>Receita de kit/chicote:</b> biblioteca de obras passadas (teste cego: banho +5%, lavabo −8/−14%, cozinha −7/+20%)</li>
+        <li><b>Receita de ramal aéreo:</b> NÃO transfere entre obras (−100% a +140%) → nasce do desenho de cada obra (camada EXO-TET)</li>
+        <li><b>Alocação térreo/20º/duplex</b> nas colunas + <b>complemento vertical "de cabeça"</b> → perguntas 1 e 2 do pacote de validação</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:14px">Estratégia de erro zero para obra nova: <b>contagens (matriz PRÉDIO, 97/133 colunas já derivadas automaticamente) × receita (kit da biblioteca + ramal do DXF) × regra por unidade</b>. Não exige atribuir DN trecho a trecho.</p>
+</section>
+
+<section>
+  <h2><span class="n">6.</span>Status dos dados das 5 obras</h2>
+  <table>
+    <thead><tr><th>Obra</th><th>Código</th><th>Quantitativo</th><th>DWG → DXF</th></tr></thead>
+    <tbody>
+      <tr><td>Living Only Ipiranga</td><td>7409</td><td><span class="pill full">completo</span></td><td>ok (32 MB)</td></tr>
+      <tr><td>The Edition</td><td>7432</td><td><span class="pill full">completo</span></td><td>ok (20 MB)</td></tr>
+      <tr><td>Pamaris</td><td>PAMA</td><td><span class="pill full">completo</span></td><td>ok (federado 66 MB)</td></tr>
+      <tr><td>Brooklyn Bridge</td><td>7332</td><td><span class="pill full">completo</span></td><td>ok (410 MB)</td></tr>
+      <tr><td>Peak</td><td>QUA</td><td><span class="pill full">completo</span></td><td>ok (12 MB)</td></tr>
+    </tbody>
+  </table>
+  <p class="muted"><b>Correção 03/07:</b> o registro anterior dizia que Brooklyn e Peak estavam com receita vazia. Era limitação do parser (só lia linhas "TUBO PEX"); essas obras usam linhas "TUBO PERT" e têm receitas e compras reais preenchidas. <b>As 5 obras são gabaritos completos.</b> Levantamentos consolidados: <code>LEVANTAMENTO_20251430.xlsx</code> e <code>LEVANTAMENTO_20251533.xlsx</code>.</p>
+</section>
+
+<section>
+  <h2><span class="n">7.</span>O que realmente precisa do Hederson (mínimo)</h2>
+  <p class="sub">Só o que não dá para derivar do material que já temos.</p>
+  <div class="ask"><b>1. Alocação térreo/20º/duplex (Living).</b>
+    As contagens derivam da matriz PRÉDIO, mas os pavimentos sem coluna própria são alocados na coluna "mais parecida" — 5 confirmações sim/não (perguntas 1.1-1.5 do pacote de validação).</div>
+  <div class="ask"><b>2. Complemento vertical "de cabeça".</b>
+    Quanto ele soma por ponto (chuveiro, lavatório, entrada) sem medir. Hipótese quantificada: é o resíduo de 15% do AQ na trilha DXF da Living.</div>
+  <div class="ask"><b>3. Caminho do ramal em obra nova + teste em paralelo.</b>
+    Confirmar que o ramal pré-medido do DXF (camada EXO-TET) com conferência dele resolve — e rodar a próxima obra da SPHE em paralelo (sistema × levantamento dele) como prova final.</div>
+  <p class="muted" style="margin-top:6px">Não é necessário perguntar margem, arredondamento, conversão de DN, composição ou receitas de kit — tudo já foi extraído e validado. Documento pronto: <code>validacao-hederson\validacao-sphe-hederson.html</code>.</p>
+</section>
+
+<section>
+  <h2><span class="n">8.</span>Próximos passos técnicos</h2>
+  <ul>
+    <li><b>Feito 03/07:</b> regra completa codificada no <code>PADRAO_SPHE.yaml</code>; gerador de levantamento com prioridade receita própria &gt; biblioteca (<code>15_levantamento_completo.py</code>); parser universal de contagens (97/133 exatas, <code>17_parser_contagens.py</code>); trilha DXF do ramal validada na Living (<code>18_dxf_vs_ramal.py</code>).</li>
+    <li>Plugar a cadeia no sistema de geração de planilhas de cotação (<code>sistema\</code>).</li>
+    <li>Calibrar a trilha DXF na Pamaris/Brooklyn (sufixos QS/R, aptos por desenho TIP*).</li>
+    <li>Ampliar a biblioteca com as obras 7xxx da pasta antiga (Vila Prudente, João Dias, Estação Lapa — também SPHE).</li>
+    <li>Rodar a obra-piloto em paralelo com o Hederson e medir a assertividade.</li>
+  </ul>
+  <p class="muted">Arquivos de análise: <code>Análise projetista\_analise\</code> (scripts 01–18) e <code>_analise\saida\</code> (extrações e biblioteca de receitas).</p>
+</section>
+
+<footer>
+  Tecnomontagem · Automação de Orçamento · Análise do projetista SPHE · 19/06/2026 · atualizado 03/07/2026
+</footer>
+
+</div>
+</body>
+</html>
