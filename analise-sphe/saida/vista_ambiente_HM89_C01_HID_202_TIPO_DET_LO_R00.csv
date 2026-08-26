@@ -1,0 +1,10 @@
+titulo;ambiente;tubo_m;vertical_AF_m;vertical_AQ_m;pontas_livres_AF;pontas_livres_AQ;rotulos_de_ponto
+VISTA;BARRILETE/HIDROMETRO;17.13;2.02;0.00;27;0;
+Vista A;COZINHA/A.SERVICO;5.42;3.53;0.00;10;0;pia cozinha:1
+Vista D;COZINHA/A.SERVICO;5.42;3.53;0.00;10;0;pia cozinha:1 tanque:1
+Vista B;COZINHA/A.SERVICO;1.31;0.00;0.00;6;0;tanque:1
+Vista C;BANHO;16.66;11.11;1.74;21;4;lavatorio:1 vaso:2
+Vista F;BANHO;17.69;11.11;1.74;21;4;lavatorio:1 vaso:2
+VISTA DO SHAFT CENTRAL;SHAFT/BARRILETE;102.80;28.85;0.00;159;0;
+VISTA;(indefinido);17.13;2.02;0.00;27;0;
+Vista E;(indefinido);1.31;0.00;0.00;6;0;

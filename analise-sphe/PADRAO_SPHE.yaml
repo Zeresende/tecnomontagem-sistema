@@ -1,98 +1,285 @@
-# PADRAO_SPHE.yaml
+# PADRAO_SPHE.yaml — v2
 # Regra de orcamento de PEX do projetista SPHE (Tecnomontagem).
-# Extraida das planilhas e validada com ERRO ZERO nas 5 obras (19/06 + 03/07/2026).
-# Ver RELATORIO-ANALISE-SPHE.html. Scripts de evidencia: _analise/10-18.
+#
+# v1 (14/07/2026) era anterior a TODAS as respostas do projetista. Esta versao incorpora
+# as 33 pendencias que o Hederson respondeu em 3 rodadas pelo portal, entre 06 e 10/08.
+# Integra das respostas: Analise projetista\RESPOSTAS-HEDERSON-*.md
+# v1 preservada em: _analise\PADRAO_SPHE_v1_2026-07-14.yaml.bak
+#
+# CONVENCAO DE STATUS em cada regra:
+#   confirmado  = o Hederson respondeu; o item de origem esta em `fonte`
+#   medido      = nos medimos contra gabarito; erro conhecido esta em `erro`
+#   hipotese    = ainda nao provado. NAO implementar como certeza
+#   derrubado   = ja foi tido como verdade e caiu. Fica registrado para nao voltar
 
+versao: 2
+data: 2026-08-12
 projetista: SPHE
 sistema: PEX
 construtora_observada: Cyrela
+obras_de_referencia: 5
 
-# --- NOMENCLATURA DE DN ---
-dn:
-  comerciais: [16, 20, 25, 32]   # PEX Serie 5 (Emmeti) - DN comercial direto
-  conversao_pompeu: false        # SPHE NAO usa 13/16/19/25
-  serie: "5"
+# =============================================================================
+# O QUE MUDOU DA v1 — ler antes de reaproveitar codigo escrito contra a v1
+# =============================================================================
+mudancas_v1_para_v2:
+  - "dn_encoding INVERTIDO: a v1 dizia que o DN nao esta em %%C nem no traco. Esta nos dois,
+     em padroes diferentes por obra. Era a afirmacao mais perigosa do arquivo."
+  - "complemento_vertical deixou de ser pendencia e virou tabela numerica."
+  - "living_AQ 0,85x: a v1 registrava como complemento vertical faltante. DERRUBADO — sao
+     pontos sem agua quente, e contagem, nao metro."
+  - "EXO-TET perdeu o rotulo de 'trilha provada'. Segue como melhor proxy conhecido."
+  - "kits_chicotes: confianca rebaixada de alta para 'estrutura sim, PECA_ID nao'."
+  - "Brooklyn deixou de ser 'dxf ok': e exportacao de Revit, a convencao SPHE nao se aplica."
+  - "Peak: a prancha traz 2 torres, nao uma planta duplicada."
 
-# --- REGRA DETERMINISTICA (validada erro zero: 88 linhas em 3 obras + 78 em Brooklyn/Peak) ---
+# =============================================================================
+# 1. CADEIA DETERMINISTICA — inalterada, e continua a parte mais solida
+# =============================================================================
 calculo:
+  status: medido
+  erro: "zero. 88 linhas nas 3 obras completas + 78 no Brooklyn e Peak"
   classificador_por_unidade:      # coluna F da planilha decide a regra da linha
-    RL: "tubo em rolo:   compra = ROUNDUP( soma(receita*contagem) * 1,07 / tamanho_rolo )"
-    BR: "tubo em barra:  idem, barra 5,80m"
-    UN: "conexao/peca:   compra = soma(receita*contagem) EXATA, sem margem"
-  margem_tubo: 1.07               # 7% so em tubo (confirmado nas 5 obras)
-  arredondamento: ROUNDUP         # por rolo inteiro; conexao nao arredonda
-  tamanho_rolo_m: {16: 200, 20: 100, 25: 100, 32: 50}   # conferir na descricao da peca
-  produtos_tubo: ["TUBO PEX ... SERIE 5 ... X <rolo>M", "TUBO PERT ... ROLO <rolo>M <cor>"]
-  atencao_parser: "NAO filtrar por 'TUBO PEX' apenas - Brooklyn/Peak usam TUBO PERT (azul/vermelho/translucido)"
+    RL: "tubo em rolo:  compra = ROUNDUP( soma(receita*contagem) * 1,07 / tamanho_rolo )"
+    BR: "tubo em barra: idem, barra de 5,80 m"
+    UN: "conexao/peca:  compra = soma(receita*contagem) EXATA, sem margem"
+  margem_tubo: 1.07
+  arredondamento: ROUNDUP
+  tamanho_rolo_m: {16: 200, 20: 100, 25: 100, 32: 50}
+  roundup_por_linha: true
+  atencao_roundup: "o ROUNDUP e POR LINHA, nao por DN agregado. O mesmo DN aparece em linhas
+    com rolos diferentes na mesma obra (a Edition tem DN25 em 50 m e em 100 m). Agregar por
+    DN antes do ROUNDUP produz numero errado que parece inconsistencia da planilha do cliente."
+  atencao_parser: "nao filtrar so por 'TUBO PEX' — Brooklyn e Peak usam TUBO PERT
+    (azul/vermelho/translucido). O Peak nao usa PEX, usa PERT, e a cor codifica o sistema."
+  alvo_de_pontuacao: "a RECEITA (metro liquido), nao a compra. A compra carrega o ROUNDUP, que
+    nao e neutro entre DNs. Na pratica os dois ficam a 1,8 p.p."
 
-# --- REGRA-MAE (validada leave-one-out no Brooklyn, script 16) ---
+# =============================================================================
+# 2. DN DO RAMAL — a secao que a v1 errava
+# =============================================================================
+dn:
+  comerciais: [16, 20, 25, 32]
+  serie: "5"
+  conversao_pompeu: false
+
+  codificacao_no_desenho:
+    status: confirmado
+    fonte: [4.1, 5.3, 15.1]
+    resumo: "a SPHE usa DOIS padroes, e qual deles depende da obra"
+    rota_1_rotulo_por_trecho:
+      formato: "texto `<DN>-PEX` ao lado da polyline do ramal (ex.: `20-PEX`, `25 - PEX`)"
+      obras: [Living, Edition, Pamaris, Brooklyn]
+      observacao: "o Brooklyn tem 36 rotulos na camada `Pipe Tags`; o regex da rota 1 os acha
+        sem adaptacao. A v1 afirmava que nao existiam — nunca tinhamos rodado o extrator la."
+    rota_2_nota_geral:
+      formato: "nota por sistema, `Ø<DN>mm`, gravada como `%%C` no DXF"
+      exemplo: "`AF - PEX. %%C20mm - TUBO GUIA: %%C32mm`"
+      obras: [Peak, Brooklyn]
+      cuidados:
+        - "a nota traz DOIS diametros: o do PEX e o do TUBO GUIA. So o primeiro vale."
+        - "descartar 45 textos `DRENO DO AR CONDICIONADO %%C25 - PVC`."
+        - "vantagem da rota 2: a nota declara o SISTEMA (AF/AQ) junto com o DN."
+    divergencia_entre_rotas:
+      status: confirmado
+      fonte: 15.1
+      regra: "rotulo e nota nunca divergem. Onde as duas existirem, usar a disponivel."
+    onde_procurar:
+      status: medido
+      regra: "rodar o extrator em TODOS os arquivos da obra, nao so na planta do tipo.
+        As pranchas DET tem rotulo proprio: Living 297, Edition 286, Pamaris 245, Peak 140,
+        Brooklyn 355. Filtrar nome por PVTIPO|TIPO|TIP esconde tudo isso."
+
+  atribuicao_ao_tubo:
+    status: confirmado
+    fonte: 5.1
+    resposta_literal: "O ponto sai do manifold reduzido e dependendo da ligacao, apos uma
+      conexao ele e reduzido para atender os pontos, normalmente apos o Tee"
+    regra: "o DN se propaga ao longo do PERCURSO a partir do manifold e reduz depois do te.
+      Nao e propriedade do segmento mais proximo do rotulo."
+    ressalva: "'dependendo da ligacao' e 'normalmente' — nao e deterministico. Pontuar com o
+      script 25 contra gabarito antes de fixar."
+    bloqueio_atual:
+      status: medido
+      valor: "so 3,6% da metragem esta num percurso ligado a um manifold"
+      causa: "a planta nao desenha a descida vertical (ver dwg.pranchas_detalhe)"
+    peso_do_rotulo:
+      status: confirmado
+      fonte: 15.2
+      regra: "rotulo de bitola maior marca o TRONCO; o de 16 marca o ramal curto ate o ponto"
+      medido: "um rotulo de DN32 carrega 5,7x (Living) a 9,3x (Edition) mais tubo que um de
+        DN16. Atribuir por proximidade trata todo rotulo com peso igual: o DN16 infla e o
+        DN25/32 esvazia. E a causa do residuo sistematico, nao ruido."
+
+  melhor_resultado_atual:
+    status: medido
+    metodo: "atribuicao por trecho remontado (scripts 29 e 30)"
+    erro: "Living 14,2 p.p. (cobertura 93,2%) · Edition 30,0 p.p. (cobertura 54,2%)"
+    veredito: "ainda nao serve para producao"
+
+  rotas_reprovadas:   # nao refazer. Detalhe em _analise\NOTA-*.md
+    - {rota: "rotulo mais proximo, por segmento",      erro: "20,1 p.p."}
+    - {rota: "casar rotulo por paralelismo",           erro: "perde para distancia em 32 combinacoes"}
+    - {rota: "seguir linha de chamada",                erro: "nao existe LEADER no DXF"}
+    - {rota: "linha dupla na escala real (Brooklyn)",  erro: "52,4 p.p.; inventa DN16 em obra sem DN16"}
+    - {rota: "par de linhas dentro do bloco",          erro: "57,0 p.p.; os blocos sao conexoes"}
+    - {rota: "conexao por nome de bloco",              erro: "0 de 2.930 nomes trazem bitola"}
+    - {rota: "densidade de no de grau 3",              erro: "101x na Living, 8,5x no Peak"}
+
+# =============================================================================
+# 3. COMPLEMENTO VERTICAL — era o ultimo tacito puro. Agora e numero.
+# =============================================================================
+complemento_vertical:
+  status: confirmado
+  fonte: [2.2, 4.2, 6.3]
+  pe_direito_m: 2.80
+  por_ponto_m:
+    chuveiro: 1.00
+    lavatorio: 1.00
+    vaso_caixa_acoplada: 0.40
+  por_apartamento_m:
+    entrada_do_apto: 1.50
+    descida_de_prumada: 1.50
+    somam: true          # fonte 6.3: "Duas coisas que somam" -> +3,00 m, nao 1,50
+    multiplicador: "numero de apartamentos do andar, nao numero de pontos"
+  medido_por_conta_propria:
+    status: medido
+    valor: "AF 1,60 m/ponto · AQ 1,54 m/ponto quente (amostra de 26 pontos)"
+    honesto: "entre 1 e 2 m por ponto. Ordem de grandeza bate com a tabela dele (~1,5x)."
+
+pontos_do_apto_tipo_living:
+  status: confirmado
+  fonte: 6.2
+  chuveiro: 2
+  lavatorio: 3
+  vaso: 3
+  pia_cozinha: 2        # sao 2 porque existe a pia do terraco
+  tanque: 1
+
+agua_quente:
+  status: confirmado
+  fonte: 6.1
+  resposta_literal: "Existem pontos que nao possuem agua quente"
+  regra: "o buraco de 15% da AQ da Living e CONTAGEM DE PONTO, nao metro faltante"
+  hipotese_derrubada:
+    o_que: "que os 15% eram complemento vertical ausente da planta"
+    como_caiu: "confirmado por 2 caminhos: a resposta 6.1 e a medicao de 11/08 — o AF tem
+      MAIS vertical desenhado e fecha em -1%. Se fosse metro vertical, o AF erraria mais."
+
+# =============================================================================
+# 4. ORIGEM DAS RECEITAS — a regra-mae, com a ressalva medida em 12/08
+# =============================================================================
 origem_das_receitas:
   kits_chicotes:
-    fonte: biblioteca              # transferem entre obras: banho +5%, lavabo -8/-14%, cozinha -7/+20%
-    confianca: alta
+    fonte_do_dado: biblioteca
+    transfere: "a ESTRUTURA do kit e a ordem de grandeza do material (±5 a 20% no tubo)"
+    nao_transfere: "o PECA_ID exato"
+    medido_12_08: "nucleo estavel entre obras: chuveiro 6% · banho 0% · lavabo 43% · cozinha 0%"
+    quatro_causas_da_variacao:
+      - "cada obra recorta o kit de um jeito (cozinha tem 5-6 conexoes em 4 obras e 2 na Pamaris)"
+      - "a mesma coisa fisica as vezes vira 1 linha e as vezes 2 (flexivel + canopla)"
+      - "o DN do ramal que alimenta muda a peca terminal do kit (te de saida 20 x 25)"
+      - "o registro e especificacao de acabamento, nao do desenho hidraulico"
+    recomendacao: "guardar o kit como esqueleto parametrizado (posicao funcional + DN de
+      entrada + linha de acabamento), nao como lista de pecas congelada. Lista emprestada
+      erra a peca sem errar a conta — passa na conferencia por total e chega errada na compra."
   ramal_aereo:
-    fonte: desenho_da_obra         # NAO transfere: -100% a +140% entre obras (geometria propria)
-    confianca_emprestimo: baixa
-  prioridade: "receita PROPRIA da obra > emprestada da biblioteca (script 15)"
+    fonte_do_dado: desenho_da_obra
+    transfere: false
+    medido: "tubo -100% a +140% entre obras; conexao 2,0 tes/apto na Living contra 0,35 no Peak"
+  prioridade: "receita PROPRIA da obra > emprestada da biblioteca"
 
-# --- CONTAGENS (parser universal script 17: 97/133 colunas exatas nas 5 obras) ---
-contagens:
-  M1_matriz_predio:
-    o_que: "abas PRÉDIO*: conta marcas (X ou codigo TP*) por final abaixo do cabecalho FINAIS"
-    cobre: "colunas de ramal/manifold com finais no header (multi-torre: aba da torre correspondente)"
-    invariantes: "soma AF = soma AQ = total de aptos; grupos de colunas com mesmos finais fecham com a matriz"
-  M2_industrializacao:
-    o_que: "bloco INDUSTRIALIZACAO no RESUMO lista contagens prontas por kit (Edition, parcial nas demais)"
-  M3_ambientes:
-    o_que: "totais de ambiente do RESUMO (travessa nao-manifold = total de aptos; chuveiro = banhos)"
-  residuo_tacito:                  # unicos casos que o parser NAO deriva sozinho
-    - "alocacao terreo/20o/duplex nas colunas (Living: 78/82/4; perguntas 1.1-1.5 do pacote Hederson)"
-    - "uniformizacao p/ cima (Brooklyn: ramal cont=40 com matriz=39)"
-    - "folhas F.1110/F.1116/F.1117 x tipologias TP* (Peak)"
+# =============================================================================
+# 5. ALOCACAO E CONTAGENS
+# =============================================================================
+numeracao_de_pavimento:
+  status: confirmado
+  fonte: 11.1
+  regra: "planilha '20o' = pavimento 20 do esquema vertical. O andar dos reservatorios e o 21."
+  por_que_importa: "5 regras da rodada 1 dependem disso para entrar no andar certo, e o erro
+    nao aparece na conferencia — sai numero plausivel e deslocado."
 
-# --- ASSINATURA NO DWG (como a SPHE desenha) ---
-dwg:
-  camadas_tubo:
-    agua_fria: "HAF-TUB-*"
-    agua_quente: "HAQ-TUB-*"
-    prumada: "PRU-F / PRU-Q"
-    esgoto_pvc: ["PB-*", "PR-*"]   # ignorar para PEX
-  sufixo_ramal_aereo: "EXO-TET"    # exposto no teto = RAMAL AEREO da planilha
-  validacao_trilha_dxf:            # script 18 (03/07)
-    living_AF: "EXO-TET 50,42 m/apto vs receita 49,75 = 1,01x  <- TRILHA PROVADA"
-    living_AQ: "0,85x (residuo = candidato ao complemento vertical de cabeca)"
-    pamaris: "1,2-1,6x - calibrar sufixos (QS/R) e aptos por desenho TIP*"
-    excluir_camadas: "LEG|REF|TAB|DET|PREVIS (legendas/tabelas duplicam geometria)"
-  dn_encoding: "nome de bloco (ex: PRUM-PX-32, SATT-25). NAO em cor/lineweight/%%C."
-  unidade: metros
-  modelo_federado: true            # arq+estrutura+hidraulica via xref; filtrar camadas hidraulicas
+alocacao_living:
+  status: confirmado
+  fonte: [1.1, 1.2, 1.4, 1.5, 9.1]
+  terreo: "finais 1, 3, 5 e 7 ja estao dentro das colunas do tipo (regra de dobra). Sem eles
+    o grupo A (1/2/7/8) teria 76 e o grupo B (3/4/5/6) teria 80."
+  pavimento_20: "os finais 3/4/5/6 NAO EXISTEM — os reservatorios ocupam a faixa central.
+    Coluna zerada esta certa; zero nao e dado faltante."
+  duplex: "alimentado so pelo 20o; nao existe ramal que o alimente pelo 21o. Conta 1x como
+    apartamento, e o andar de cima aparece nos kits como +4 banhos."
+  chuveiro_332: "328 banhos tipo + 4 master do duplex superior"
+  lavabo_82: "76 + 4 do duplex superior + 2 do terreo (finais 1 e 7)"
 
-# --- ABAS DO QUANTITATIVO ---
-quantitativo:
-  abas_tubo: [RAMAL, KITS, CHICOTES]
-  passante_laje: "aba oculta (Astra)"
-  coluna_E: descricao_da_peca
-  coluna_F: unidade (RL/BR/UN)
-  coluna_G: "Qtde Total Levantada (rolos p/ tubo, unidades p/ conexao)"
-  colunas_Hmais: "receita: qtd da peca por kit/final"
-  linha_contagem: "geralmente L3 (auto-detectar pela linha com mais celulas numericas)"
-  decomposicao_varia_por_obra:
-    Living: "RAMAL AEREO por grupo de finais"
-    Edition: "por ambiente (CHICOTE COZINHA/LAVABO/TIPO)"
-    Pamaris: "CHICOTE BANHO 1/2 + KIT CHUVEIRO"
-    Peak: "por folha de detalhe (F.1110/F.1116/F.1117) x torre"
+prumada:
+  status: confirmado
+  fonte: [2.1, 7.1]
+  prum_px_32: "340 blocos = 17 prumadas x 20 pavimentos"
+  ja_esta_na_receita_do_ramal: true
+  atencao: "NAO somar de novo — o DN32 da prumada ja esta dentro da receita do RAMAL AEREO"
+  pru_f: "nao e prumada PEX. Nao somar. (Ele disse o que nao e, sem dizer o que e.)"
 
-# --- STATUS DOS DADOS (corrigido 03/07: as 5 sao gabaritos completos) ---
-obras:
-  20241385_LIVING_7409:   {quantitativo: completo, dxf: ok}
-  20241390_EDITION_7432:  {quantitativo: completo, dxf: ok}
-  20251670_PAMARIS:       {quantitativo: completo, dxf: ok}
-  20251430_BROOKLYN_7332: {quantitativo: completo, dxf: ok, nota: "tubo em linhas PERT; ramais reais no arquivo"}
-  20251533_PEAK_QUA:      {quantitativo: completo, dxf: ok, nota: "tubo em linhas PERT azul/vermelho"}
+# =============================================================================
+# 6. GLOSSARIO — erro nosso que contaminava contagem de kit
+# =============================================================================
+glossario:
+  status: confirmado
+  fonte: 4.4
+  lavatorio: "LOUCA. A pia do banheiro. E o que aparece escrito no DETIPO."
+  lavabo: "AMBIENTE. Banheiro sem kit chuveiro."
+  atencao: "nao sao sinonimos. O parser tratava os dois como a mesma coisa."
 
-# --- PENDENTE COM HEDERSON (pacote validacao-hederson/) ---
-pendente_hederson:
-  - alocacao_terreo_20_duplex (Living, perguntas 1.1-1.5)
-  - complemento_vertical_de_cabeca (tabela 2.2; hipotese: residuo AQ 15% da trilha DXF)
-  - prumada_PRUM-PX-32_340 = 17 prumadas x 20 pav?
-  - confirmar caminho do ramal em obra nova (DXF pre-medido) + teste em paralelo
+# =============================================================================
+# 7-8. LEITURA DE ARQUIVO — movido para PADRAO_SPHE_ARQUIVOS.yaml
+# =============================================================================
+# Camadas do DWG, fragmentacao, vao de conexao, pranchas de detalhe e a estrutura
+# da planilha vivem em PADRAO_SPHE_ARQUIVOS.yaml.
+arquivos_ver: PADRAO_SPHE_ARQUIVOS.yaml
+
+# =============================================================================
+# 9. OBRAS — movido para PADRAO_SPHE_OBRAS.yaml
+# =============================================================================
+# Os dados por obra (Living, Edition, Pamaris, Brooklyn, Peak e HM89) vivem em
+# PADRAO_SPHE_OBRAS.yaml. Este arquivo guarda a REGRA; aquele guarda a INSTANCIA.
+obras_ver: PADRAO_SPHE_OBRAS.yaml
+
+# =============================================================================
+# 10. POSICIONAMENTO E VALIDACAO
+# =============================================================================
+posicionamento:
+  status: confirmado
+  fonte: 3.1
+  resposta_literal: "Pode nao resolver, porem facilita o nosso trabalho"
+  regra: "vender PRE-LEVANTAMENTO para conferencia, nao levantamento pronto"
+
+validacao_em_paralelo:
+  status: confirmado
+  fonte: [3.2, 10.2]
+  compromisso: "ele roda o teste em paralelo na proxima obra SPHE"
+  data: null
+  regra: "amarrar a validacao a EVENTO ('primeira obra SPHE que entrar'), nao a calendario"
+
+autocad_segue_padrao:
+  status: confirmado
+  fonte: 14.2
+  regra: "AutoCAD segue como padrao; BIM nao e atalho automatico — no DXF exportado de Revit
+    o diametro nao chegou utilizavel"
+
+# =============================================================================
+# 11. O QUE CONTINUA ABERTO
+# =============================================================================
+pendente:
+  - item: 16.1
+    o_que: "a descida do teto ate o ponto entra na linha de RAMAL ou ja esta dentro do kit?"
+    status: "no portal desde 11/08, sem resposta"
+    trava: "3 quantidades na faixa de 10-15%: complemento vertical, camada do Peak, vao de conexao"
+  - item: 17.1
+    o_que: "a prancha DET sempre traz bitola no traco?"
+    status: "no portal desde 11/08, sem resposta"
+  - item: 5.2
+    o_que: "divergencia desenho x compra"
+    status: "ele atribuiu ao tamanho de rolo; medimos e o rolo move so 1,8 p.p. contra erro
+      de 14. O residuo e nosso. NAO reperguntar — contar a ele."
+  - item: 7.1
+    o_que: "o que e a camada PRU-F"
+    status: "residuo de baixo impacto"

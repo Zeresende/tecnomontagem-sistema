@@ -1,0 +1,45 @@
+OBRA 20241385 | ARQUIVO 7409-HID-PE-0007-PVTIPO-R01.dxf (32.7 MB)
+  unidade=METROS (mediana LINE=0.03) | n_segs=13279 | textos %%C=102
+  TOTAL bruto=1704.6 m  |  classificado por DN=692.3 m (41%)
+  --- metros por DN (proximidade %%C, raio 2m) ---
+     DN   40 :    329.9 m
+     DN   15 :    129.2 m
+     DN   11 :    112.9 m
+     DN   20 :     61.1 m
+     DN   16 :     25.3 m
+     DN   25 :     19.3 m
+     DN   32 :      9.0 m
+     DN    1 :      5.6 m
+     (nao classificado: 1012.3 m)
+  --- top 15 layers (m) ---
+     XXXX-HD-04-TIP$0$HAF-TUB-___-EXO-TET    403.4
+     XXXX-HD-04-TIP$0$HAF-TUB-___-___      255.4
+     XXXX-HD-04-TIP$0$HAQ-TUB-___-EXO-TET    238.1
+     XXXX-HD-04-TIP$0$HID-TUB-___-___      119.7
+     XXXX-HD-04-TIP$0$HAF-TUB-___-EXO-PIS    105.4
+     XXXX-HD-04-TIP$0$HAF-TUB___PRU-F       77.3
+     XXXX-HD-04-TIP$0$HDR-TUB___PRU-DR      66.6
+     XXXX-HD-04-TIP$0$HAF-TUB-___-EXO-PEX     61.2
+     XXXX-HD-04-TIP$0$HAQ-TUB-___-EXO-PEX     52.6
+     XXXX-HD-04-TIP$0$HAQ-TUB-___-EXO       41.8
+     XXXX-HD-04-TIP$0$HAF-TUB-___-EXO-INT     37.2
+     XXXX-HD-04-TIP$0$HAQ-TUB-___-EXO-R     35.3
+     XXXX-HD-04-TIP$0$HAQ-TUB-___-___       34.9
+     XXXX-HD-04-TIP$0$HGC-TUB-___-EXO       26.8
+     XXXX-HD-04-TIP$0$HAF-TUB___PRU-rsb     21.0
+  --- top 15 blocos ---
+     AQ_TIPO$0$318-XXXX-ARQ-BASE-013-TIPO$0$PERFIL 6   360
+     XXXX-HD-04-TIP$0$PRUM-PX-32          340
+     AQ_TIPO$0$318-XXXX-ARQ-BASE-001-APTO 1$0$PERFIL 6   216
+     AQ_TIPO$0$318-XXXX-ARQ-BASE-002-APTO 2$0$PERFIL 6   144
+     XXXX-HD-04-TIP$0$PRUM-INS-SATT-25    117
+     XXXX-HD-04-TIP$0$bl2459254766308     117
+     XXXX-HD-04-TIP$0$niv1                108
+     *U87                                 102
+     AQ_TIPO$0$318-XXXX-ARQ-BASE-005-APTO 1 OPÇÃO$0$PERFIL 6   102
+     AQ_TIPO$0$318-XXXX-ARQ-BASE-006-APTO 2 PCD$0$PERFIL 6   102
+     XXXX-HD-04-TIP$0$PRUM-PB-100_atributos    89
+     XXXX-HD-04-TIP$0$PRUM-PB-100          89
+     XXXX-HD-04-TIP$0$PJ922F               87
+     AQ_TIPO$0$318-XXXX-ARQ-BASE-014-ESCADA TIPO$0$PERFIL 6    87
+     XXXX-HD-04-TIP$0$PLU22L0              73

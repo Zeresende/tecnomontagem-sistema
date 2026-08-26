@@ -1,0 +1,60 @@
+# PADRAO_SPHE_OBRAS.yaml — v2 · 2026-08-12
+# Dados POR OBRA do projetista SPHE. Separado do PADRAO_SPHE.yaml de proposito:
+# aquele guarda a REGRA (vale para qualquer obra da SPHE), este guarda a INSTANCIA
+# (o que distingue cada arquivo, e o que ja nos derrubou um resultado em cada um).
+#
+# Ler junto com PADRAO_SPHE.yaml. Mesma convencao de status.
+
+versao: 2
+data: 2026-08-12
+projetista: SPHE
+
+obras:
+  20241385_LIVING:
+    quantitativo: completo
+    dn: rotulo
+    alerta: "o DXF do tipo mede 1.393,6 m contra 679,7 esperados para 8 finais (2,05x).
+      Nao e espelho nem duplicacao. Mix nao sofre se o fator for uniforme; nao testado."
+  20241390_EDITION:
+    quantitativo: completo
+    dn: rotulo
+    nota: "deslocamentos dx~97,5/198,6 = escala de planta; a receita tem 3 linhas de DN20 e
+      3 de DN32 = tres torres"
+  20251670_PAMARIS:
+    quantitativo: completo
+    dn: rotulo
+    alerta: "ramal 100% DN25 — NAO serve como teste de extrator: qualquer metodo acerta"
+  20251430_BROOKLYN:
+    quantitativo: completo
+    dn: "rotulo (36 tags) + nota"
+    alerta: "NAO e AutoCAD SPHE — e exportacao de Revit. 87 camadas em ingles (Pipes,
+      Pipe Tags, Structural Connections). HAF-TUB soma 10,3 m de residuo; o tubo real esta
+      em Pipes e Pex - TIGRE, misturado com esgoto e ar-condicionado.
+      A convencao PADRAO_SPHE NAO se aplica as camadas desta obra."
+    caminho: "pedir o nativo RVT ou IFC (item 14.1 — o Hederson se dispos a solicitar)"
+  20251533_PEAK:
+    quantitativo: completo
+    dn: nota
+    material: "PERT azul/vermelho, nao PEX. A cor codifica o sistema."
+    status_confirmado: 13.1
+    alerta: "a prancha traz AS 2 TORRES do empreendimento, ambas contam. Sao 8 aglomerados:
+      2 plantas de torre (605,7 + 627,0 = 1.232,7 m), 2 plantas de furo, 1 bloco estrutural
+      e residuo. Cortar pela metade do Y NAO separa as torres.
+      A tipologia aparece em 3 copias; a 3a tem 6,8 m e e planta de referencia — sem
+      descartar, o denominador vira 30 aptos em vez de 20.
+      O nome do arquivo diz TOA (Torre A) mas a prancha traz as duas: nao usar nome de
+      arquivo para decidir a que torre uma planta pertence."
+
+hm89:
+  status: confirmado
+  fonte: [4.3, 4.5, 8.1, 8.2, 9.2]
+  unidades_tipo: 216            # 2 torres x 12 finais x 9 pavimentos
+  unidades_terreo_subsolo: 33   # subsolo A 7 · terreo A 11 · subsolo B 6 · terreo B 9
+  unidades_total: 249
+  receita_terreo_subsolo: "a mesma do tipo"
+  lavabo: 0
+  travessa_manifold: 0          # a gas so no fogao — especifico desta obra
+  travessa_aquecedor: 0
+  barrilete: "externo a torre, entao o 9o e o ultimo andar"
+  acao_pendente: "regerar LEVANTAMENTO_HM89 com 249 unidades"
+

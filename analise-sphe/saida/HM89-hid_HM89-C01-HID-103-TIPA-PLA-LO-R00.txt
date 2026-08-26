@@ -1,0 +1,39 @@
+OBRA HM89-hid | ARQUIVO HM89-C01-HID-103-TIPA-PLA-LO-R00.dxf (12.3 MB)
+  unidade=METROS (mediana LINE=0.00) | n_segs=47687 | textos %%C=42
+  TOTAL bruto=4616.1 m  |  classificado por DN=609.8 m (13%)
+  --- metros por DN (proximidade %%C, raio 2m) ---
+     DN   25 :    361.3 m
+     DN   40 :    248.4 m
+     (nao classificado: 4006.4 m)
+  --- top 15 layers (m) ---
+     2001-HD-00-BATP$0$HID-TAB-___-DET-2    653.3
+     2001-HD-00-BATP$0$HAF-TUB-___-EXO-TET    526.2
+     2001-HD-00-BATP$0$HID-___-___-REF     374.3
+     2001-HD-00-BATP$0$HID-TAB-___-DET-1    293.2
+     2001-HD-00-BATP$0$HID-CON-___-___     255.3
+     SF_TIPA-GRAUTE$0$ARCO-MD-SHAFT        253.1
+     2001-HD-00-BATP$0$HID-ALV-___-DET     246.2
+     2001-HD-00-BATP$0$HID-___-___-LEG-6    215.0
+     2001-HD-09-TIPA$0$HID-FUR-PIS-LAJ     154.3
+     SF_TIPA$0$ES-SHAFT                    136.4
+     2001-HD-00-BATP$0$HAF-TUB-___-___     112.1
+     2001-HD-00-BATP$0$HID-CON-___-EXO     110.0
+     AQ_TIPA$0$HID-___-___-REF              77.2
+     2001-HD-00-BATP$0$HID-FUR-TET-LEG      73.4
+     2001-HD-00-DETPA$0$HID-TAB-___-DET-2     62.8
+  --- top 15 blocos ---
+     SF_TIPA-GRAUTE$0$ES_001_39_14_19_NO_CM_PL  1150
+     SF_TIPA-GRAUTE$0$GRAUTE              692
+     SF_TIPA-GRAUTE$0$EV_005_39_09_19_NO_CM_PL   374
+     2001-HD-09-TIPA$0$_DOT               156
+     2001-HD-00-BATP$0$bl2459254766308    140
+     SF_TIPA-GRAUTE$0$ES_001_09_14_19_NO_CM_PL   102
+     SF_TIPA-GRAUTE$0$ES_001_19_14_19_NO_CM_PL    98
+     2001-HD-00-BATP$0$CHAM15              86
+     SF_TIPA-GRAUTE$0$EV_005_19_09_19_NO_CM_PL    76
+     SF_TIPA-GRAUTE$0$EV_006_09_14_19_NO_CM_PL    72
+     2001-HD-00-BATP$0$PRUM-INS-SATT-40    72
+     2001-HD-00-BATP$0$PRUM-INS-SATT-25    68
+     2001-HD-00-BATP$0$PRUM-PB-40          63
+     SF_TIPA-GRAUTE$0$ES_001_54_14_19_NO_CM_PL    56
+     2001-HD-00-BATP$0$A$C5784307D         51

@@ -1,0 +1,41 @@
+OBRA 20251670 | ARQUIVO PAMA-0C-HI-PE-0101-TIPO-R00.dxf (66.7 MB)
+  unidade=METROS (mediana LINE=0.00) | n_segs=273383 | textos %%C=96
+  TOTAL bruto=15407.2 m  |  classificado por DN=7538.2 m (49%)
+  --- metros por DN (proximidade %%C, raio 2m) ---
+     DN   25 :   4918.1 m
+     DN   10 :   1470.9 m
+     DN   32 :    857.0 m
+     DN   16 :    292.2 m
+     (nao classificado: 7869.0 m)
+  --- top 15 layers (m) ---
+     1934-HD-06-TIP3$0$HID-___-___-LEG    3804.8
+     1934-HD-06-TIP3$0$HAQ-TUB-___-EXO-TET-QS   1133.8
+     1934-HD-06-TIP3$0$HID-CON-___-___    1112.7
+     1934-HD-06-TIP3$0$HAF-TUB-___-EXO-TET    781.5
+     1934-HD-06-TIP3$0$HID-FUR-TET-LEG     728.8
+     1934-HD-06-TIP3$0$HAQ-TUB-___-EXO-TET    606.7
+     PAMA-0C-AR-PR-2002-TIPO-R00$0$1817_24-BS-2002-TIPO$0$ARQ-HID    580.6
+     1934-HD-06-TIP3$0$HID-CON-___-EXO     522.5
+     1934-HD-06-TIP3$0$HAQ-TUB-___-___-Q-PREVISÃO    480.4
+     1934-HD-06-TIP3$0$Hid-alv-___-det     463.0
+     1934-HD-06-TIP3$0$HID-___-___-REF     386.4
+     1934-HD-06-TIP3$0$HID-MET-___-DET-5    337.9
+     1934-HD-06-TIP3$0$HID-TAB-___-DET-2    319.9
+     1934-HD-06-TIP3$0$HID-CON-___-DET     276.6
+     1934-HD-06-TIP3$0$HAF-TUB-___-___     272.6
+  --- top 15 blocos ---
+     SF_PAMA-0C-ES-EP-0107-TIPO-R00$0$BL_14X39  2642
+     SF_PAMA-0C-ES-EP-0107-TIPO-R00$0$GR_14x39  1446
+     1934-HD-06-TIP3$0$bl2459254766308    628
+     1934-HD-06-TIP3$0$PRUM-INS-SATT-40   590
+     *U837                                495
+     PAMA-0C-AR-PR-2002-TIPO-R00$0$1817_24-BS-2002-TIPO$0$1990CCT_p_2   429
+     PAMA-0C-AR-PR-2002-TIPO-R00$0$1817_24-BS-2002-TIPO$0$CUBA MENOR COZINHA   429
+     PAMA-0C-AR-PR-2002-TIPO-R00$0$1817_24-BS-2002-TIPO$0$BACIA CAIXA ACOPLADA   429
+     *U852                                385
+     SF_PAMA-0C-ES-EP-0107-TIPO-R00$0$BL_14X34   382
+     *U827                                374
+     *U867                                363
+     *U871                                352
+     *U872                                352
+     SF_PAMA-0C-ES-EP-0107-TIPO-R00$0$BL_14X19   284

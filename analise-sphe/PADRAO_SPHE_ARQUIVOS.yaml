@@ -1,0 +1,225 @@
+# PADRAO_SPHE_ARQUIVOS.yaml — v2 · 2026-08-12
+# COMO LER os arquivos da SPHE: o que cada camada do DWG significa, como a planilha se
+# organiza, e as armadilhas que ja custaram resultado errado em cada um.
+# Separado do PADRAO_SPHE.yaml de proposito: aquele guarda a REGRA DE ORCAMENTO,
+# este guarda a LEITURA DO ARQUIVO. Mesma convencao de status.
+
+versao: 3
+data: 2026-08-17
+projetista: SPHE
+
+# =============================================================================
+# 7. ASSINATURA NO DWG
+# =============================================================================
+dwg:
+  unidade: metros
+  modelo_federado: true
+
+  cotas_moram_dentro_dos_blocos:
+    status: confirmado
+    data: 2026-08-17
+    regra: "contar DIMENSION so no modelspace devolve ZERO e leva a concluir que a prancha nao
+      tem cota. Errado: as cotas estao dentro dos blocos/xref. No HM89 sao 167 na 202-TIPO-DET
+      e 163 na 103-TIPA — todas invisiveis sem descer com virtual_entities."
+    corrige: "o registro de 13/08 que dizia `zero entidades DIMENSION no TIPA E na 202-TIPO-DET`
+      e que, por causa disso, a unidade do HM89 ficou como `medido, por absurdo`. A conferencia
+      TINHA insumo o tempo todo."
+    unidade_hm89:
+      status: confirmado          # era `medido` ate 17/08
+      fator_medida_sobre_desenhado: 1.0000    # mediana; 152 de 167 dentro de 1,00 +-10%
+      valor_das_cotas: "mediana 0,200 m · min 0,100 · max 2,100 — grandeza de instalacao
+        hidraulica em METRO. Em mm dariam 0,2 mm, em cm 0,2 cm: absurdos."
+  camadas_tubo:
+    agua_fria: "HAF-TUB-*"
+    agua_quente: "HAQ-TUB-*"
+    esgoto_pvc: ["PB-*", "PR-*"]     # ignorar para PEX
+  excluir_camadas: "LEG|REF|TAB|DET|PREVIS"
+
+  classificacao_por_prefixo:
+    status: medido
+    data: 2026-08-13
+    regra: "o SISTEMA e o PREFIXO da camada (HAF/HAQ/HAP/HDR/HES/HGC/HIN), nunca o ultimo
+      campo. `-PEX` e qualificador de material e existe nos DOIS: `HAF-TUB-___-EXO-PEX` e
+      `HAQ-TUB-___-EXO-PEX`. Filtrar por palavra solta no nome tambem erra: `AC-TUB-DRENO`
+      e ar-condicionado, nao HDR."
+    so_TUB_conta: "CON=conexao, EQU=equipamento, LEG=legenda, TXT=texto — fora da metragem"
+    normalizar: "colapsar [-_]+ antes de casar: existem `HAF-TUB___PRU-F`, `HDR-TUB___PRU-DR`
+      e `HES_TUB___PRU_A`. Um regex `^HAF-TUB-` devolve zero SEM erro, e o que se perde e prumada."
+
+  rotulo_de_dn_pode_vir_com_marcador_de_diametro:
+    status: confirmado
+    data: 2026-08-18
+    regra: >-
+      o rotulo de bitola aparece em DUAS notacoes na mesma familia de obras: `25-PEX` puro e
+      `%%C25-PEX` (o `%%C` e o marcador de diametro do AutoCAD, o Ø antes de resolvido).
+      Regex que comeca com fronteira-de-palavra NAO casa a segunda, porque entre o `C` e o
+      digito nao ha fronteira. Regex correto (Python):
+      (?:%%[cC]|Ø|\b)(\d{2})\s*-\s*PEX\b — mantendo a fronteira como ALTERNATIVA, senao
+      `116-PEX` passa a casar como 16.
+    onde_doi: >-
+      sao justamente os rotulos da PRUMADA do shaft (`F- %%C25-PEX`, `A.F. - 12x%%C25-PEX`
+      ao lado de `RAMAIS SEGUEM PARA OS APARTAMENTOS`). Sem eles a coluna vertical inteira
+      fica orfa de DN e a rota topologica nao tem de onde propagar.
+    medido: >-
+      HM89: balde `sem DN` do vertical de vista cai de 49,1% (29,1 m) para 1,1% (0,6 m).
+      NAO-CLASSIFICADO do extrator de ramal cai de 110,5 m (15,7%) para 3,3 m (0,5%).
+      Living 495,2 -> 314,3 m · Edition 49,9 -> 2,0 m · Pamaris 473,4 -> 13,6 m.
+      Nenhum metro e criado: sai do balde nao-classificado e entra no DN.
+    varia_por_obra: >-
+      a Peak (20251430) nao usa `%%C` — zero ocorrencias no acervo. A notacao muda por obra
+      dentro do MESMO escritorio, como o prefixo x sufixo de camada.
+    corrige: >-
+      o cabecalho do 22_ramal_por_dn.py afirmava desde 06/08 que `a SPHE nao usa a notacao
+      %%C`. Usa. A conclusao errada ficou escrita como comentario e foi lida no lugar do
+      desenho por dois meses.
+
+  medir_geometria:
+    status: medido
+    data: 2026-08-13
+    arco: "o ARC do DXF e SEMPRE anti-horario de start_angle para end_angle. Usar
+      ((a1-a0) %% 360) * raio. Com abs(a1-a0) o arco que cruza o zero sai pelo complemento
+      (350->10 vira 340 em vez de 20). Na HM89 isso inflou a agua fria em 80,7 m sobre 54,3
+      reais — 235 dos 842 arcos cruzavam o zero."
+    arco_nao_e_desprezivel: "7,8% da fria e 23,8% da quente da HM89 sao ARC. Leitor que so
+      percorre LINE/LWPOLYLINE perde isso em silencio."
+    polilinha_fechada: "NAO somar o segmento de fechamento. Polilinha fechada em camada de
+      tubo e simbolo, nao cano. Na HM89 eram 63 polilinhas e 6,9 m."
+    circle: "fora da metragem. Sao ralos e simbolos — no dreno da HM89 inflavam ~12 m."
+    conferido_com: "KitFlow, 13/08: HAF 696,0 · HAQ 5,64 · HGC 40,03 · HAP 9,53 nos dois lados"
+  sufixo_ramal_aereo:
+    valor: "EXO-TET"
+    status: proxy_de_conveniencia
+    nota: "melhor proxy conhecido do ramal, adotado em 03/07 porque deu 1,01x no AF da Living.
+      Em 11/08 esse 1,01x perdeu status de prova: se o ramal precisa de ~1,6 m/ponto de
+      vertical, medir so o teto teria que ficar ~26% curto. Em 17/08 o item 16.1 respondeu
+      qual e a definicao correta (ver `fronteira_ramal_kit`), e ela NAO e uma camada — e um
+      corte no registro de gaveta. O sufixo continua util como estimativa, nao como
+      definicao."
+
+  fronteira_ramal_kit:
+    status: respondido_nao_reproduzido
+    fonte: 16.1
+    data: 2026-08-17
+    frase_do_hederson: "A descida esta no ramal, do registro gaveta para frente segue no kit."
+    leitura: "a fronteira nao e tipo de tubo nem camada: e uma PECA no desenho. O tubo
+      vertical conta como ramal ate o registro de gaveta; do registro em diante e kit."
+    o_que_isso_resolve: "de uma vez, a duvida de a quem pertence o complemento vertical
+      (1 a 2 m/ponto) e por que a receita de kit muda com o DN do ramal — o kit comeca
+      numa peca cujo diametro e o do ramal que chega nela."
+    onde_o_registro_aparece:
+      status: medido
+      data: 2026-08-17
+      script: 56_registro_nas_vistas.py
+      Living:   "bloco `Registro de gaveta ABNT DocolBasicos ... VISTA SHAFT 001` (11) +
+        `HI-RG-40-1` (9) + textos RG/REGISTRO GAVETA"
+      Edition:  "bloco `Registro de gaveta ABNT DocolBasicos ...` (9) + `REGISTRO - VISTA LATERAL`"
+      Brooklyn: "bloco `Registro de gaveta DocolBase`, e o NOME DO BLOCO diz o contexto:
+        `- MANIFOLD A_S_ - FINAIS B2_B1_A1_A2`, `- VISTA DA COZINHA E A_S - FINAL B3`,
+        `- DETALHE DO SHAFT`. E a unica obra que entrega a fronteira rotulada."
+      Pamaris:  "bloco `REGISTRO DE GAVETA FRONTAL` (17)"
+      Peak:     "so texto (`RG`, `REGISTRO DE PRESSAO (VISTA E PLANTA)`) — sem bloco proprio"
+    limite_medido: "na Living o registro esta no SHAFT, nao no ambiente: das marcas que caem
+      dentro de uma regiao de vista, 32 sao de shaft e 3 de parede. O corte na vista de parede
+      separou 1,0 m acima e 0,1 m abaixo — nada. Ou seja: a resposta define a fronteira, mas o
+      desenho da Living nao mostra o registro no lugar onde a descida precisa ser cortada."
+    o_que_falta: "saber se o registro-fronteira e o do shaft (entrada do apartamento) ou o de
+      cada ambiente. Se for o do shaft, o ramal aereo de 398 m/pavimento cairia inteiro do lado
+      do kit — e isso nao fecha. Pergunta da rodada 5."
+
+  corte_topologico_na_planta:
+    status: reprovado
+    data: 2026-08-17
+    motivo: "a rede da planta nao fecha: so 3,6% da metragem liga a um manifold (medido em
+      10/08, script 30) porque a planta NAO desenha as descidas verticais. Com ponte de 0,25 m
+      e 36 manifolds como raiz, o alcance na Living foi 24,7 m de 973,5 (2,5%) — antes mesmo
+      de aplicar qualquer corte."
+    consequencia: "o corte no registro nao pode ser feito por travessia de grafo na planta.
+      Onde ele e computavel e nas VISTAS da prancha DET, que e onde a descida existe."
+
+  fragmentacao:
+    status: medido
+    valor: "26 mil segmentos, mediana 6 mm; 52% da metragem em 304 pecas de 1 m ou mais;
+      96,1% dos cacos com vizinho colinear"
+    regra: "remontar antes de medir: snap + fusao de nos de grau 2 + ponte de 15 a 25 cm"
+
+  vao_de_conexao:
+    status: medido
+    valor: "o desenho corta o tubo em cada conexao e o vao nao esta em camada nenhuma.
+      Living 626 vaos = 90,2 m = 13,3% da receita do pavimento; Peak 224 = 41,6 m = 9,3%"
+    atencao: "os vaos NAO sao tes — 626 vaos num pavimento que preve 16 tes"
+    entra_na_metragem: "EM ABERTO. O 16.1 respondeu de quem e o tubo, nao com que regua ele
+      mede o percurso. A pergunta de centro a centro x peca a peca foi feita junto e ele nao
+      respondeu essa metade — repetida na rodada 5."
+
+  pranchas_detalhe:
+    status: confirmado
+    fonte: 12.1
+    regra: "a descida vertical EXISTE desenhada, em prancha separada com DET/AMPL/ISOM no nome"
+    gramatica_do_nome: "QUA-HID-LO-1214-TOB-DET-R00 =
+      empreendimento-disciplina-status-folha-pavimento/torre-tipo-revisao"
+    revisao_por_folha: true    # da para atualizar o levantamento parcialmente
+    bitola_no_traco:
+      status: confirmado
+      fonte: 17.1
+      data: 2026-08-17
+      regra: "a prancha DET SEMPRE traz a bitola marcada no traco, mesmo nas obras em que a
+        planta do pavimento so tem a anotacao geral. Logo: quando a planta nao rotula, a
+        fonte de DN e a prancha DET — nao a anotacao geral, nem a proximidade."
+      corrige: "o item 5.3, onde afirmamos que o Peak nao tinha rotulo no traco. Tinha: 140 na
+        prancha DET e 109 na da torre B. O erro foi procurar no arquivo errado."
+    inventario_medido:
+      Living:   {prancha: DETTIP,   rotulos: 297, vertical_m: 559.7}
+      Edition:  {prancha: DTIP,     rotulos: 286, vertical_m: 988.8}
+      Pamaris:  {prancha: DTIP,     rotulos: 245, vertical_m: 1436.9}
+      Peak:     {prancha: "TOA DET", rotulos: 140, vertical_m: 253.0}
+      Brooklyn: {prancha: DETIPO,   rotulos: 355, vertical_m: 0}
+    armadilha: "a prancha DET contem a planta inteira TAMBEM. Medir TIPO + DET sem recortar
+      por regiao conta o mesmo tubo 2x. E em planta, 'segmento vertical' e direcao norte-sul,
+      nao altura — separar elevacao de planta antes de qualquer soma."
+
+# =============================================================================
+# 8. QUANTITATIVO (planilha)
+# =============================================================================
+quantitativo:
+  abas_tubo: [RAMAL, KITS, CHICOTES]
+  passante_laje: "aba oculta (Astra)"
+  coluna_E: descricao_da_peca
+  coluna_F: "unidade (RL/BR/UN) — e a unidade de COMPRA"
+  coluna_G: "Qtde Total Levantada (rolos para tubo, unidades para conexao)"
+  colunas_Hmais: "receita: quantidade da peca em 1 kit/final"
+  linha_contagem: "geralmente L3 — autodetectar pela linha com mais celulas numericas"
+  armadilha_unidade: "a coluna F diz RL, mas a RECEITA naquela linha esta em METROS. A
+    conversao para rolo acontece so na coluna G. Ler 1,2 como rolo da 120 m por chuveiro."
+  armadilha_cabecalho: "o nome do kit pode nao estar na primeira linha da coluna. No Peak a
+    primeira e o codigo da folha (F.1116) e o nome vem depois. Concatenar todas as linhas
+    acima da linha de contagem."
+  decomposicao_varia_por_obra:
+    Living: "RAMAL AEREO por grupo de finais"
+    Edition: "por ambiente"
+    Pamaris: "CHICOTE BANHO 1/2 + KIT CHUVEIRO"
+    Peak: "por folha de detalhe (F.1110/F.1116/F.1117) x torre"
+
+# =============================================================================
+# 9. LINHA DE PRODUTO (PEX Serie 5 x PERT, e a cor)
+# =============================================================================
+linha_de_produto:
+  status: confirmado
+  fonte: 18.1
+  data: 2026-08-17
+  frase_do_hederson: "E especificado pelo cliente antes de iniciarmos o levantamento, sempre
+    que recebemos o projeto fazemos alguns questionamentos basicos para ai sim seguir com
+    nosso servico."
+  definido_por: cliente          # construtora, nao fornecedor e nao a Tecnomontagem
+  momento: "antes do levantamento, na entrada do projeto"
+  consequencia_no_sistema: "NAO e pergunta de desenho e nao vira pendencia de projetista.
+    Vira campo obrigatorio de ABERTURA DE OBRA, preenchido pelo orcamentista com o que o
+    cliente especificou — junto do upload dos arquivos. Confirma a decisao 2 mandada a
+    Karina em 13/08, que ate agora era argumento e passa a ser requisito declarado."
+  por_que_importa: "a biblioteca monta obra nova com receita emprestada de obra antiga, e
+    cada receita carrega o produto da obra de onde veio. No levantamento da HM89 o tubo de 16
+    saiu fatiado em 4 linhas de produto (PERT translucido, PERT vermelho, PEX Serie 5 em rolo
+    de 100 e de 200). O total fecha e a compra sai errada."
+  efeito_na_cotacao: "PEX Serie 5 = 5 fornecedores (Astra/Barbi/Emmeti/TF/Ultrapexx) ·
+    PERT azul-vermelho = 3 · PERT translucido = 2. A escolha da linha corta a concorrencia."
+  pendencia_aberta: "pedir a lista dos `questionamentos basicos` que eles ja fazem na entrada
+    do projeto — e o formulario de abertura de obra pronto, escrito por quem usa (rodada 5)."

@@ -7,3 +7,12 @@ __pycache__/
 
 # Backups automaticos dos scripts (o git ja versiona; backups sao cinto de seguranca local)
 *_backup_*.xlsx
+
+# Dado bruto de obra — decisao de 27/07: o repo compartilhado leva METODO, nao dado.
+# Os DXF/DWG do acervo SPHE somam ~1,2 GB e sao do cliente.
+*.dxf
+*.dwg
+*.rvt
+
+# Cache derivado dos extratores (regeravel a partir do DXF, 2-5 MB por obra)
+cache_*.json
