@@ -137,7 +137,18 @@ def carregar_levantamento(caminho):
         if qtd < 0:
             avisos.append(f"linha {r}: QTD_TOTAL negativa ({qtd}) - peca {int(peca_id)} ignorada")
             continue
-        levantamento[int(peca_id)] = float(qtd)
+        pid = int(peca_id)
+        if pid in levantamento:
+            # mesma peca em 2+ linhas (ex.: variantes de embalagem 100M/200M do mesmo id).
+            # Antes a segunda linha SOBRESCREVIA a primeira em silencio; agora soma e avisa.
+            avisos.append(
+                f"linha {r}: peca {pid} repetida - somada "
+                f"({levantamento[pid]:g} + {float(qtd):g} = {levantamento[pid] + float(qtd):g}). "
+                f"Conferir se as linhas sao mesmo a mesma peca"
+            )
+            levantamento[pid] += float(qtd)
+        else:
+            levantamento[pid] = float(qtd)
 
     # cabecalho da obra (linhas 1-4)
     metadados = {
