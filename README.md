@@ -70,7 +70,7 @@ Revisar os avisos antes de enviar as planilhas aos fornecedores.
 
 ## Receita dos kits SPHE (analise-sphe)
 
-`analise-sphe/saida/receita_kits_4_sphe.csv` é gerado pelo `scripts/51_receita_kits_4.py` a partir das planilhas das 5 obras (fora do repo). A coluna `receita` está em ROLOS para tubo (o `60_mkit_por_kit.py` converte para m/kit) e em unidades por kit para conexão.
+`analise-sphe/saida/receita_kits_4_sphe.csv` é gerado pelo `scripts/51_receita_kits_4.py` a partir das planilhas das 5 obras (fora do repo). A coluna `receita` é a célula da planilha SPHE: METROS POR KIT para tubo e unidades por kit para conexão. A compra em rolos é `ROUNDUP(soma(m/kit × contagem) × 1,07 / tamanho do rolo)`, fórmula da coluna G conferida nas 5 obras em 04/09/2026 (a leitura anterior, em rolos, estava errada).
 
 Quando a planilha-fonte tem erro auditado depois (ex.: Pamaris, correções do Marcelo em 04/09/2026), a correção NÃO é feita no CSV à mão: entra em `analise-sphe/saida/correcoes_receita_sphe.csv` (obra, coluna, ação `adicionar`/`renomear`, peça, receita, status, auditor, motivo) e o 51 aplica por cima na hora de gravar. Só `status=aplicada` entra no CSV; `pendente_*` fica listado no console até o número chegar.
 

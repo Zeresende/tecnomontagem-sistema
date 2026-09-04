@@ -9,7 +9,9 @@ conferiu que ela fecha (77/77), sem despejar os valores. Este script despeja.
 Estrutura da planilha, ja decodificada em 19/06:
   col 5 = descricao da peca · col 6 = unidade (RL/BR/UN) · col 7 = G (compra)
   col 8+ = uma coluna por KIT; linha de contagem = quantas vezes o kit ocorre;
-  celula [linha da peca, coluna do kit] = RECEITA (quanto da peca em 1 kit)
+  celula [linha da peca, coluna do kit] = RECEITA (quanto da peca em 1 kit):
+      conexao em UN/kit; TUBO EM METROS/KIT (nao rolos). Prova: a coluna G e
+      ROUNDUP(soma(celula x contagem) / tamanho_rolo x 1,07) nas 5 obras (04/09/2026).
 
 Camada de CORRECOES AUDITADAS (04/09/2026): a planilha-fonte pode ter erro que o
 Marcelo/Hederson corrigem depois (ex.: Pamaris BANHO 2 sem o te 20-16-16). A fonte

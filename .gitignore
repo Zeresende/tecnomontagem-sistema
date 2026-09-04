@@ -16,3 +16,6 @@ __pycache__/
 
 # Cache derivado dos extratores (regeravel a partir do DXF, 2-5 MB por obra)
 cache_*.json
+
+# gabarito da rodada holdout: e a resposta e e dado da obra - fica local, so o Jose tem
+analise-sphe/saida/holdout_*/gabarito_*
