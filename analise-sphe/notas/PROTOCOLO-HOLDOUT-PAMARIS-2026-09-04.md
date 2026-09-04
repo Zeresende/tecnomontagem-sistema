@@ -32,6 +32,14 @@ O que estava errado ate hoje: a leitura de 26/08 ("receita em ROLOS, m/kit = rol
 
 Quem avalia e o `63_comparar_holdout.py`, mecanico. Reprovou em um, reprovou.
 
+### 2b. Adendo de 04/09 (18h, antes de qualquer resultado do braco B): as 2 celulas pendentes do Marcelo
+
+O gabarito de tubo e a coluna G do quantitativo (o que o Hederson comprou). A fonte NAO tem tubo O16 no CHICOTE BANHO 2 nem tubo O25 no CHICOTE BANHO 1 - sao exatamente os 2 tubos que o Marcelo ficou de cotar (aba PENDENTES do gabarito). Se a DTIP mostrar esses tubos, o conector vai emitir mais metros que o gabarito e o C3 acusa sem ser erro do conector.
+
+Regra: diferenca de tubo que cai **inteira** numa celula da aba PENDENTES e "explicada, aguarda Marcelo" e nao reprova; o C3 e avaliado **sem** esses metros (C3 ajustado). Qualquer outra diferenca segue a regra normal (+-1 rolo). Quando o numero do Marcelo chegar, entra no gabarito e o C3 fecha sem ajuste.
+
+Para isso a Karina devolve um 3o arquivo, `receita_lida.csv` (`COLUNA;PECA_ID;QTD_POR_KIT`, tubo em m/kit, conexao em UN/kit): o que o conector leu de cada kit na DTIP. O `63` compara celula a celula com a aba POR_KIT do gabarito (conexao exata, tubo 5% por celula), marca EXPLICADA / DIFERENCA / A MAIS / FALTA e recalcula o C3. Colunas de RAMAL nao entram (ramal e medido na TIPO). Sem o arquivo, o 63 so ve o total da obra e nao separa "Marcelo" de erro de leitura.
+
 ## 3. Campos de abertura da Pamaris (o que o Marcelo declara numa obra nova)
 
 | Campo | Valor |
@@ -66,7 +74,7 @@ Leitura: **a biblioteca-mae por mediana nao generaliza.** O que muda de obra par
 |---|---|
 | `61_biblioteca_sem_obra.py --sem 20251670` | biblioteca das 4 obras + predicao do braco A |
 | `62_gabarito_holdout.py --obra 20251670` | gabarito por PECA_ID a partir do quantitativo (com as correcoes do Marcelo) — **so o Jose roda** |
-| `63_comparar_holdout.py --obra 20251670 --resultado x.xlsx [--kits k.csv]` | aplica C1-C4 e da o veredito |
+| `63_comparar_holdout.py --obra 20251670 --resultado x.xlsx [--kits k.csv] [--receita receita_lida.csv]` | aplica C1-C4 e da o veredito; com `--receita`, decompoe por celula de kit e aplica o C3 ajustado (2b). Usa `holdout_receita_lida.py` |
 
 O `gabarito_pamaris.xlsx` fica fora do repositorio (e a resposta da rodada e e dado da obra). A biblioteca das 4 obras e a predicao do braco A estao em `analise-sphe/saida/holdout_pamaris/`.
 

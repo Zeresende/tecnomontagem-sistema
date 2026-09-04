@@ -13,9 +13,13 @@ Resultado aceito em 3 formatos:
   --resultado arquivo.csv    colunas PECA_ID;QTD_TOTAL (ou , como separador)
   --predicao                 braco A: predicao da biblioteca-mae (saida do 61), por papel
 Tubo no resultado pode vir em metros (padrao, unidade do catalogo) ou em rolos (--tubo-em rolos).
+  --receita receita_lida.csv  COLUNA;PECA_ID;QTD_POR_KIT (o que o conector leu de cada kit na DTIP):
+                             decompoe a diferenca por celula e aplica a regra de 04/09 - diferenca
+                             que cai inteira numa celula PENDENTE (tubos do Marcelo) e "explicada",
+                             e o C3 passa a ser avaliado sem esses metros (C3 ajustado).
 
 Uso:
-  python 63_comparar_holdout.py --obra 20251670 --resultado kitflow_pamaris.xlsx [--kits kits.csv]
+  python 63_comparar_holdout.py --obra 20251670 --resultado kitflow_pamaris.xlsx [--kits kits.csv] [--receita receita_lida.csv]
   python 63_comparar_holdout.py --obra 20251670 --predicao
 """
 import argparse
@@ -35,6 +39,8 @@ AQUI = Path(__file__).resolve().parent
 SISTEMA = AQUI.parent.parent / "sistema"
 sys.path.insert(0, str(SISTEMA))
 m03 = importlib.import_module("03_gerar_planilhas")
+sys.path.insert(0, str(AQUI))
+import holdout_receita_lida as hrl
 
 OBRAS = {"20241385": "Living", "20241390": "Edition", "20251430": "Brooklyn",
          "20251533": "Peak", "20251670": "Pamaris"}
@@ -145,6 +151,7 @@ def main():
     ap.add_argument("--predicao", action="store_true", help="braco A: biblioteca-mae do 61")
     ap.add_argument("--tubo-em", choices=("metros", "rolos"), default="metros")
     ap.add_argument("--kits", help="csv COLUNA;CONTAGEM para o criterio C1")
+    ap.add_argument("--receita", help="csv COLUNA;PECA_ID;QTD_POR_KIT lido da DTIP (decomposicao + C3 ajustado)")
     a = ap.parse_args()
     apelido = OBRAS[a.obra]
     pasta = AQUI / "saida" / f"holdout_{apelido.lower()}"
@@ -167,6 +174,7 @@ def main():
     for x in avisos:
         print("  aviso:", x)
     veredito = {}
+    kr = None
 
     # C1 contagens
     if a.kits:
@@ -218,6 +226,22 @@ def main():
         ok_c3 = False
         print(f"  {pid:>7} {str(catalogo[pid]['descricao'])[:44]:44} a mais: {res[pid]:.0f}  FALHA")
     veredito[f"C3 tubo por bitola (+-{TOL_ROLOS} rolo)"] = ok_c3
+
+    # decomposicao por coluna de kit + C3 ajustado (regra de 04/09: celulas pendentes do Marcelo)
+    if a.receita:
+        lida, avisos_r = hrl.ler_receita_lida(a.receita, norm)
+        for x in avisos_r:
+            print("  aviso:", x)
+        celulas, contagem, pend = hrl.ler_gabarito_por_kit(pasta, apelido, norm)
+        pend = hrl.resolver_pendentes_por_catalogo(pend, catalogo, norm)
+        linhas, explicado = hrl.decompor(lida, celulas, contagem, pend, kr, catalogo, gab)
+        hrl.conferir_totais(lida, contagem, kr, res, gab, a.tubo_em, FOLGA)
+        ok_c3_aj = hrl.imprimir(linhas, explicado, gab, res, a.tubo_em, FOLGA, TOL_ROLOS)
+        veredito.pop(f"C3 tubo por bitola (+-{TOL_ROLOS} rolo)")
+        veredito[f"C3 tubo por bitola (+-{TOL_ROLOS} rolo) - bruto: {'passa' if ok_c3 else 'falha'}; "
+                 f"AJUSTADO sem celulas pendentes"] = ok_c3_aj
+        veredito["DECOMPOSICAO por celula (sem DIFERENCA / A MAIS / FALTA)"] = not any(
+            st in ("DIFERENCA", "A MAIS", "FALTA") for *_, st in linhas)
 
     # C4 fora do catalogo
     fora = sorted(pid for pid in res if pid not in catalogo)
