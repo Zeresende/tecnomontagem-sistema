@@ -11,6 +11,13 @@ Estrutura da planilha, ja decodificada em 19/06:
   col 8+ = uma coluna por KIT; linha de contagem = quantas vezes o kit ocorre;
   celula [linha da peca, coluna do kit] = RECEITA (quanto da peca em 1 kit)
 
+Camada de CORRECOES AUDITADAS (04/09/2026): a planilha-fonte pode ter erro que o
+Marcelo/Hederson corrigem depois (ex.: Pamaris BANHO 2 sem o te 20-16-16). A fonte
+nao e nossa pra editar, entao a correcao vive em `saida/correcoes_receita_sphe.csv`
+e e aplicada por cima da extracao na hora de gravar o CSV. Assim, re-rodar este
+script NAO desfaz a correcao. Linhas com status diferente de `aplicada` (ex.:
+`pendente_qtd`) so sao avisadas, nunca entram no CSV.
+
 Uso: python 51_receita_kits_4.py [--csv]
 """
 import sys, os, re, glob
@@ -92,6 +99,55 @@ def coletar(obra):
     return achados
 
 
+CORRECOES = AQUI / "saida" / "correcoes_receita_sphe.csv"
+
+
+def aplicar_correcoes(linhas):
+    """Aplica `correcoes_receita_sphe.csv` sobre as linhas extraidas (cabecalho incluso).
+
+    acao=renomear: troca `peca` por `peca_nova` na linha (obra, coluna_planilha, peca).
+    acao=adicionar: insere (obra, coluna_planilha, peca, unidade, receita), copiando
+    kit_alvo/aba/contagem de uma linha ja existente da mesma coluna.
+    So status=aplicada entra; o resto e listado como pendencia."""
+    import csv as _csv
+    if not CORRECOES.exists():
+        return linhas, []
+    with open(CORRECOES, encoding="utf-8-sig", newline="") as f:
+        regras = list(_csv.DictReader(f, delimiter=";"))
+    cab, corpo = linhas[0], [list(l) for l in linhas[1:]]
+    avisos = []
+    for rg in regras:
+        chave = (rg["obra"], rg["coluna_planilha"])
+        rotulo = f"{rg['obra']} · {rg['coluna_planilha']} · {rg['acao']} {rg['peca']}"
+        if rg["status"] != "aplicada":
+            avisos.append(f"PENDENTE [{rg['status']}] {rotulo} — {rg['motivo']}")
+            continue
+        mesma_coluna = [l for l in corpo if (l[0], l[2]) == chave]
+        if not mesma_coluna:
+            avisos.append(f"IGNORADA (coluna nao existe na extracao) {rotulo}")
+            continue
+        if rg["acao"] == "renomear":
+            alvo = [l for l in mesma_coluna if l[5] == rg["peca"]]
+            if len(alvo) != 1:
+                avisos.append(f"IGNORADA ({len(alvo)} linhas casaram) {rotulo}")
+                continue
+            alvo[0][5] = rg["peca_nova"]
+            avisos.append(f"aplicada: {rotulo} -> {rg['peca_nova']}")
+        elif rg["acao"] == "adicionar":
+            if any(l[5] == rg["peca"] for l in mesma_coluna):
+                avisos.append(f"IGNORADA (peca ja existe na coluna) {rotulo}")
+                continue
+            modelo = mesma_coluna[0]
+            nova = [modelo[0], modelo[1], modelo[2], modelo[3], modelo[4],
+                    rg["peca"], rg["unidade"], float(rg["receita"])]
+            pos = corpo.index(mesma_coluna[-1]) + 1
+            corpo.insert(pos, nova)
+            avisos.append(f"aplicada: {rotulo} = {rg['receita']} {rg['unidade']}")
+        else:
+            avisos.append(f"IGNORADA (acao desconhecida) {rotulo}")
+    return [cab] + [tuple(l) for l in corpo], avisos
+
+
 def main():
     csv = "--csv" in sys.argv
     linhas_csv = [("obra", "kit_alvo", "coluna_planilha", "aba", "contagem",
@@ -118,6 +174,12 @@ def main():
                     linhas_csv.append((obra, alvo, bloco["coluna"], bloco["aba"],
                                        bloco["contagem"], desc, un, v))
         print()
+
+    linhas_csv, avisos = aplicar_correcoes(linhas_csv)
+    if avisos:
+        print("CORRECOES AUDITADAS (saida/correcoes_receita_sphe.csv):")
+        for a in avisos:
+            print(f"  {a}")
 
     if csv:
         import csv as _csv
