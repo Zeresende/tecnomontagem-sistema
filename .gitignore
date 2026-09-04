@@ -19,3 +19,6 @@ cache_*.json
 
 # gabarito da rodada holdout: e a resposta e e dado da obra - fica local, so o Jose tem
 analise-sphe/saida/holdout_*/gabarito_*
+
+# Dado real de obra (Cyrela Joao Dias) - tirado do repo em 04/09, mesma regra do DXF: metodo, nao dado
+obras/JOAO_DIAS/
