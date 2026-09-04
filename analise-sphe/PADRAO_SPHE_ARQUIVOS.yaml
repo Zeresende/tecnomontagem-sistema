@@ -223,3 +223,39 @@ linha_de_produto:
     PERT azul-vermelho = 3 · PERT translucido = 2. A escolha da linha corta a concorrencia."
   pendencia_aberta: "pedir a lista dos `questionamentos basicos` que eles ja fazem na entrada
     do projeto — e o formulario de abertura de obra pronto, escrito por quem usa (rodada 5)."
+
+# =============================================================================
+# 10. GRUPO DE FINAIS (variante de metragem dentro do mesmo pavimento tipo)
+# =============================================================================
+grupo_de_finais:
+  status: confirmado
+  fonte: devolutiva Karina
+  data: 2026-08-28
+  historico: "ate 27/08 a hipotese era AUTO-DETECTAR o grupo de finais por clusterizacao
+    geometrica (leitor walker), validada no piloto HM89 (13 apes -> 2 grupos, gap 73%).
+    Gabarito cravado ANTES do teste cego na Edition: achar 2 grupos com {FINAL 01, FINAL 02}
+    em razao ~3x. Teste REPROVOU (razao medida 1,88x, sem robustez) — falha valida pelo
+    proprio criterio, sem retrofit."
+  bug_achado: "ao investigar a reprovacao, Karina achou que o walker aplicava so ESCALA de
+    bloco, sem TRANSLACAO — rotulos colapsavam num split limpo FALSO. Refeito com a
+    coordenada certa, o HM89 TAMBEM nao clusteriza. O auto-detect nunca foi provado, nem no
+    piloto que parecia ter validado. Bug e so de POSICAO: nao afeta comprimento/receita
+    (m/kit, rolos), que seguem validos."
+  definido_por: Marcelo (Tecnomontagem)          # ja declara o grupo por obra, ex.: Pamaris FINAL 1/2 x 3/4/5/6
+  momento: "antes do levantamento, na abertura de obra — mesmo momento de linha_de_produto"
+  consequencia_no_sistema: "AUTO-DETECT DE GRUPO DE FINAIS SAI DO SISTEMA. Vira campo
+    obrigatorio de ABERTURA DE OBRA (junto com linha_de_produto e a travessa da area de
+    servico), preenchido com o que o Marcelo ja declara. Nao ha geometria a clusterizar em
+    tempo de levantamento — o dado ja existia o tempo todo, so nao estava capturado como
+    campo formal."
+  por_que_importa: "a variante de metragem por grupo de finais e real (Edition finais 3/4/5/6
+    = 5,0 m/kit vs finais 1/2 = 15,0 m/kit) e decide a receita do kit — mas depender de
+    auto-deteccao geometrica e fragil (a Edition e a Pamaris tem a info espalhada em quadros
+    desconexos do sheet, sem cozinha isolavel por FINAL) e proprio a bugs silenciosos de
+    leitura, como este."
+  padrao_a_reaplicar: "gabarito cravado ANTES do teste, sem espaco pra retrofit, expos 2
+    bugs de leitura neste projeto antes de construir em cima deles (o ARC em 13/08, o walker
+    em 28/08). Desconfiar de resultado limpo demais em auto-deteccao sem verificar a
+    geometria bruta (translacao de bloco, nao so escala)."
+  pendencia_aberta: "formalizar o campo `grupo_de_finais` no formulario de abertura de obra
+    junto com linha_de_produto (mesma pendencia da rodada 5, ver secao 9)."

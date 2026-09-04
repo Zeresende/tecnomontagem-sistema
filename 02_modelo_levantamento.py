@@ -98,10 +98,18 @@ def gerar_modelo(nome_obra, sistemas_filtro=None, force=False):
     ws["A4"].font = Font(bold=True)
     ws["B4"] = "Hederson"
 
+    ws["A5"] = "Grupo de finais (Marcelo):"
+    ws["A5"].font = Font(bold=True)
+    ws["B5"] = ""
+    ws["B5"].fill = INPUT_FILL
+    ws["C5"] = ("declarado na abertura da obra, ex.: FINAL 1/2 x FINAL 3/4/5/6 "
+                "— nao ha auto-deteccao (decisao 2026-08-28, ver PADRAO_SPHE_ARQUIVOS.yaml secao 10)")
+    ws["C5"].font = Font(italic=True, size=9, color="808080")
+
     # CABECALHO DA TABELA
     headers = ["peca_id", "sistema", "descricao", "unidade", "qtd_total", "obs"]
     larguras = [10, 14, 55, 10, 14, 30]
-    LINHA_HEADER = 6
+    LINHA_HEADER = 7
     for col, h in enumerate(headers, start=1):
         c = ws.cell(row=LINHA_HEADER, column=col, value=h.upper())
         c.font = HEADER_FONT

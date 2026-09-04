@@ -150,13 +150,19 @@ def carregar_levantamento(caminho):
         else:
             levantamento[pid] = float(qtd)
 
-    # cabecalho da obra (linhas 1-4)
+    # cabecalho da obra (linhas 1-5). Linha 5 = grupo de finais declarado pelo
+    # Marcelo na abertura da obra (campo criado em 28/08; modelos antigos nao tem
+    # a linha e devolvem vazio). Nao existe auto-deteccao — ver PADRAO_SPHE_ARQUIVOS.yaml s.10.
     metadados = {
         "obra": ws.cell(1, 2).value or "OBRA",
         "construtora": ws.cell(2, 2).value or "",
         "data": ws.cell(3, 2).value or "",
         "responsavel": ws.cell(4, 2).value or "",
+        "grupo_de_finais": ws.cell(5, 2).value or "",
     }
+    if linha_header > 6 and not metadados["grupo_de_finais"]:
+        avisos.append("grupo de finais (B5) em branco - campo obrigatorio da abertura de obra, "
+                      "declarado pelo Marcelo (ex.: FINAL 1/2 x FINAL 3/4/5/6)")
     return metadados, levantamento, avisos
 
 
@@ -368,6 +374,7 @@ def processar_obra(nome_obra):
     # ---- 2) Para cada fornecedor, pegar itens que ele cobre ----
     relatorio = []
     relatorio.append(f"RELATORIO DE COTACAO - {metadados['obra']}\n")
+    relatorio.append(f"Grupo de finais (Marcelo): {metadados['grupo_de_finais'] or '(nao declarado)'}\n")
     relatorio.append(f"Total de pecas no levantamento: {len(levantamento)}\n\n")
     if avisos:
         relatorio.append(f"--- {len(avisos)} AVISOS DE VALIDACAO (revisar antes de enviar) ---\n")
