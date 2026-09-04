@@ -44,6 +44,17 @@ m03 = importlib.import_module("03_gerar_planilhas")
 
 FUZZY_ACEITA = 0.85
 
+# Guarda do fuzzy (04/09/2026): SequenceMatcher pontua alto entre descricoes que so
+# diferem na bitola/rosca — caso real: 'DISTRIBUIDOR C/ REG. ABERTO 1" PEX 25/25/25MM'
+# (Living, 164 un) casou a 0,85+ com o id 850 (1.1/4" 20/20/20MM), peca errada aceita
+# em silencio. Fuzzy so vale se os numeros (16/20/25, 1/2", 3/4", 1.1/4"...) forem os
+# mesmos nos dois lados; senao a linha vai pra revisao manual com os candidatos.
+RX_NUMEROS = re.compile(r"[0-9]+(?:[.,][0-9]+)?(?:/[0-9]+)?")
+
+
+def tokens_numericos(s):
+    return set(RX_NUMEROS.findall(norm_txt(s)))
+
 # nome da aba -> sistema do catalogo (abas fora do mapa: match sem filtro de sistema)
 ABA_SISTEMA = {
     "KITS": "PEX", "RAMAL": "PEX", "PEX": "PEX", "PEX-AMANCO": "PEX",
@@ -151,7 +162,10 @@ def casar_linha(codigos, desc, sistema, cod_idx, desc_idx, catalogo):
     scores.sort(reverse=True)
     top3 = [(pid, catalogo[pid]["descricao"], round(s, 3)) for s, pid in scores[:3]]
     if scores and scores[0][0] >= FUZZY_ACEITA:
-        return scores[0][1], "fuzzy", top3
+        melhor_pid = scores[0][1]
+        if tokens_numericos(dn) == tokens_numericos(catalogo[melhor_pid]["descricao"]):
+            return melhor_pid, "fuzzy", top3
+        return None, "pendente_numeros", top3
     return None, "pendente", top3
 
 
@@ -193,6 +207,9 @@ def importar_template(caminho_template, catalogo, equivalencias):
             pid, metodo, top3 = casar_linha(codigos, desc, mapa["sistema"], cod_idx, desc_idx, catalogo)
             if pid is None:
                 n["pendente"] += 1
+                if metodo == "pendente_numeros":
+                    avisos.append(f"{ws.title} L{r}: '{str(desc).strip()[:50]}' parecia com o id "
+                                  f"{top3[0][0]} ({top3[0][2]:.2f}) mas a bitola/rosca difere - foi pra revisao")
                 pendentes.append({"aba": ws.title, "linha": r, "descricao": str(desc).strip(),
                                   "unid": ws.cell(r, mapa["col_unid"]).value if mapa["col_unid"] else "",
                                   "qtd": float(qtd), "top3": top3})
