@@ -40,6 +40,22 @@ Regra: diferenca de tubo que cai **inteira** numa celula da aba PENDENTES e "exp
 
 Para isso a Karina devolve um 3o arquivo, `receita_lida.csv` (`COLUNA;PECA_ID;QTD_POR_KIT`, tubo em m/kit, conexao em UN/kit): o que o conector leu de cada kit na DTIP. O `63` compara celula a celula com a aba POR_KIT do gabarito (conexao exata, tubo 5% por celula), marca EXPLICADA / DIFERENCA / A MAIS / FALTA e recalcula o C3. Colunas de RAMAL nao entram (ramal e medido na TIPO). Sem o arquivo, o 63 so ve o total da obra e nao separa "Marcelo" de erro de leitura.
 
+### 2c. Adendo de 05/09 (antes de qualquer resultado do braco B): os 2 tubos do Marcelo chegaram
+
+Marcelo cotou (via Karina, 05/09, manha): **CHICOTE BANHO 1 - tubo O25 = 2 m/kit** e **CHICOTE BANHO 2 - tubo O16 = 4 m/kit** (bitola 16 confirmada; a estimativa de 1 m/kit que circulou em 04/09 estava errada). Os dois entraram em `correcoes_receita_sphe.csv` como `aplicada` e, com isso, a aba PENDENTES do gabarito ficou vazia: **a regra 2b nao tem mais celula para explicar**, o C3 volta a ser avaliado inteiro (+-1 rolo), e o `63` com `--receita` continua decompondo por celula, agora sem desconto.
+
+O gabarito de tubo mudou em duas bitolas. A coluna G do Hederson foi calculada sem essas celulas, entao o `62` passou a RECALCULAR os rolos da linha de tubo que recebeu correcao (as outras linhas seguem a coluna G; a aba TUBO_POR_BITOLA diz qual foi qual):
+
+| Bitola | Antes (coluna G) | Depois (05/09) | O que entrou |
+|---|---|---|---|
+| O16 | 7.500 m = 41 rolos | **7.980 m = 43 rolos** | +480 m (4 m/kit x 120 BANHO 2) |
+| O20 | 8.658 m = 93 rolos | 8.658 m = 93 rolos | nada |
+| O25 | 29.958 m = 321 rolos (KITS 918 + RAMAL 29.040) | **31.278 m = 335 rolos** (KITS 2.238 + RAMAL 29.040) | +1.320 m (2 m/kit x 660 BANHO 1) |
+
+Atencao ao O25: o C3 compara o **total da obra**, e o tubo 25 tem ramal (29.040 m, 311 rolos) e CHICOTE ASV (300 m) alem dos kits de banho. A conta "618 m -> 1.938 m, 7 -> 21 rolos" que circulou em 05/09 olha so KIT CHUVEIRO H + CHICOTE BANHO 1 + CHICOTE BANHO 2; o delta esta certo (+14 rolos), a base nao. O gabarito e 321 -> 335.
+
+Receita e gabarito mudaram juntos, no mesmo commit (`receita_kits_4_sphe.csv` ganhou as 2 linhas; `gabarito_pamaris.xlsx` regerado pelo `62` em 05/09). A biblioteca das 4 obras (`holdout_pamaris/receita_kits_4_obras.csv`) nao muda: Pamaris nao esta nela.
+
 ## 3. Campos de abertura da Pamaris (o que o Marcelo declara numa obra nova)
 
 | Campo | Valor |

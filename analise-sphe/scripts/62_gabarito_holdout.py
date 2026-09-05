@@ -11,6 +11,9 @@ mecanica. Regras, conferidas na formula da coluna G das 5 obras (04/09/2026):
     os rolos do Hederson (coluna G) vao numa coluna a parte
 Correcoes auditadas (saida/correcoes_receita_sphe.csv, status=aplicada) entram na matriz
 ANTES dos totais; as pendentes vao para a aba PENDENTES.
+Linha de tubo tocada por correcao (05/09/2026): a coluna G do Hederson foi calculada sem
+aquela celula, entao os rolos dessa linha sao RECALCULADOS (ROUNDUP(metros x 1,07 / rolo));
+as demais linhas seguem a coluna G. A aba TUBO_POR_BITOLA diz qual foi qual.
 
 Uso: python 62_gabarito_holdout.py --obra 20251670
 Saida: saida/holdout_<apelido>/gabarito_<apelido>.xlsx (+ .csv da aba POR_PECA_ID)
@@ -122,11 +125,13 @@ def aplicar_correcoes(obra, abas):
                     novo = linhas.setdefault(rg["peca_nova"], {"unid": rg["unidade"], "celulas": {},
                                                                "codigos": [], "G": 0.0})
                     novo["celulas"][c] = v
+                    novo["corrigida"] = linhas[rg["peca"]]["corrigida"] = True
                     aplicadas.append(f"{aba} / {rg['coluna_planilha']}: {rg['peca']} -> {rg['peca_nova']} ({v:g}/kit)")
             elif rg["acao"] == "adicionar":
                 novo = linhas.setdefault(rg["peca"], {"unid": rg["unidade"], "celulas": {},
                                                       "codigos": [], "G": 0.0})
                 novo["celulas"][c] = float(rg["receita"])
+                novo["corrigida"] = True
                 aplicadas.append(f"{aba} / {rg['coluna_planilha']}: +{rg['peca']} = {rg['receita']}/kit")
     return aplicadas, pendentes
 
@@ -182,11 +187,19 @@ def main():
             por_pid[pid]["qtd"] += total
             por_pid[pid]["origem"].add(aba)
             if tubo:
-                rolos = L["G"] or math.ceil(total * FOLGA / rolo)
+                recalc = math.ceil(total * FOLGA / rolo)
+                if L["G"] and not L.get("corrigida"):
+                    rolos, fonte = L["G"], "coluna G"
+                else:
+                    rolos, fonte = recalc, "recalculado"
+                    if L["G"] and L["G"] != recalc:
+                        fonte = f"recalculado (coluna G dizia {int(L['G'])}, sem a correcao)"
                 por_pid[pid]["rolos"] += rolos
                 por_pid[pid]["rolo"] = rolo
                 bitolas[dn or "?"][aba] += total
                 bitolas[dn or "?"]["rolos"] += rolos
+                bitolas[dn or "?"].setdefault("fonte", [])
+                bitolas[dn or "?"]["fonte"].append(f"{aba}: {int(rolos)} rolos, {fonte}")
 
     out = openpyxl.Workbook()
     ws = out.active
@@ -213,7 +226,7 @@ def main():
     for dn in sorted(bitolas):
         ms = [round(bitolas[dn].get(x, 0.0), 1) for x in abas_nomes]
         ws3.append([f"O{dn}"] + ms + [round(sum(ms), 1), int(bitolas[dn]["rolos"]),
-                    "rolos = ROUNDUP(metros x 1,07 / rolo), coluna G do quantitativo"])
+                    "rolos = ROUNDUP(metros x 1,07 / rolo); " + " | ".join(bitolas[dn].get("fonte", []))])
     ws4 = out.create_sheet("PENDENTES")
     ws4.append(["COLUNA", "ACAO", "PECA", "STATUS", "MOTIVO"])
     for rg in pendentes:
@@ -244,8 +257,9 @@ def main():
     for x in aplicadas:
         print("  correcao aplicada:", x)
     for dn in sorted(bitolas):
-        metros = sum(v for k, v in bitolas[dn].items() if k != "rolos")
-        print(f"  O{dn}: {metros:.0f} m -> {int(bitolas[dn]['rolos'])} rolos (Hederson)")
+        metros = sum(v for k, v in bitolas[dn].items() if k not in ("rolos", "fonte"))
+        print(f"  O{dn}: {metros:.0f} m -> {int(bitolas[dn]['rolos'])} rolos  "
+              f"[{' | '.join(bitolas[dn].get('fonte', []))}]")
     for s in sem_id:
         print("  SEM PECA_ID:", s)
     print(f"saida: {saida}")

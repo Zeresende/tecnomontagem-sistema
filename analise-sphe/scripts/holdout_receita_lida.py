@@ -164,7 +164,11 @@ def imprimir(linhas, explicado, gab, res, tubo_em, folga, tol_rolos):
 
     # consistencia interna: soma das celulas x contagem tem de bater com o levantamento
     ok_c3 = True
-    print(f"\nC3 ajustado (descontados os metros das celulas pendentes do Marcelo, +-{tol_rolos} rolo):")
+    if explicado:
+        print(f"\nC3 ajustado (descontados os metros das celulas pendentes do Marcelo, +-{tol_rolos} rolo):")
+    else:
+        print(f"\nC3 por bitola a partir da receita_lida (sem celula pendente no gabarito: "
+              f"ajustado = bruto, +-{tol_rolos} rolo):")
     for pid, g in sorted(gab.items()):
         if g["tipo"] != "TUBO":
             continue
